@@ -10,9 +10,19 @@ var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
 var cube = new THREE.Mesh( geometry, material );
 //scene.add( cube );
 
-camera.position.z = 2;
+camera.position.x = -1.1018233407389477;
+camera.position.y = 0.7667102560150264;
+camera.position.z = 9.867664273831625;
 
 renderer.setClearColor( 0xffffff, 1 );
+
+
+var scene = new THREE.Scene();
+fogColor = new THREE.Color(0xffffff);
+
+scene.background = fogColor;
+scene.fog = new THREE.Fog(fogColor, 0.0025, 20);
+
 
 
 var controls  = new THREE.OrbitControls(camera, renderer.domElement);
@@ -69,6 +79,8 @@ var animate = function () {
 	cube.rotation.y += 0.1;*/
 
 	renderer.render(scene, camera);
+    
+    //console.log(camera.position);
 };
 
 animate();
