@@ -67,9 +67,30 @@ mtlLoader.load('WALKERS.mtl', function (materials) {
     objLoader.load('WALKERS.obj', function(object){
         //object.position.y -= 60;
         scene.add(object);
+        objects.push(object);
     });
     
 });
+
+var objects = [];
+
+function onDocumentMouseDown( event ){
+    event.preventDefault();
+    var mouseX = (event.clientX / window.innerWidth)*2-1;
+    var mouseY = -(event.clientY /window.innerHeight)*2+1;
+    var vector = new THREE.Vector3( mouseX, mouseY, 0.5 );
+    //projector.unprojectVector( vector, camera );
+    var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+    var intersects = raycaster.intersectObjects( objects, true );
+    console.log( intersects[0].point);
+    console.log( objects);
+}
+
+$('body').on('click', function(e){
+    onDocumentMouseDown(e);
+});
+
+
 var animate = function () {
 	requestAnimationFrame( animate );
 
@@ -81,6 +102,10 @@ var animate = function () {
 	renderer.render(scene, camera);
     
     //console.log(camera.position);
+    
 };
+
+
+
 
 animate();
