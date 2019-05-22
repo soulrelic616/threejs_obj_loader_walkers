@@ -10,9 +10,18 @@ var material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
 var cube = new THREE.Mesh( geometry, material );
 //scene.add( cube );
 
+/*
 camera.position.x = -1.1018233407389477;
 camera.position.y = 0.7667102560150264;
 camera.position.z = 9.867664273831625;
+*/
+
+
+camera.position.x = 0;
+camera.position.y = 400;
+camera.position.z = 800;
+camera.lookAt(scene.position);
+
 
 renderer.setClearColor( 0xffffff, 1 );
 
@@ -21,7 +30,7 @@ var scene = new THREE.Scene();
 fogColor = new THREE.Color(0xffffff);
 
 scene.background = fogColor;
-scene.fog = new THREE.Fog(fogColor, 0.0025, 20);
+//scene.fog = new THREE.Fog(fogColor, 0.0025, 20);
 
 
 
@@ -66,6 +75,7 @@ mtlLoader.load('WALKERS.mtl', function (materials) {
     objLoader.setPath('models/');
     objLoader.load('WALKERS.obj', function(object){
         //object.position.y -= 60;
+        object.userData.name = "WALKERS";
         scene.add(object);
         objects.push(object);
     });
@@ -80,14 +90,30 @@ function onDocumentMouseDown( event ){
     var mouseY = -(event.clientY /window.innerHeight)*2+1;
     var vector = new THREE.Vector3( mouseX, mouseY, 0.5 );
     //projector.unprojectVector( vector, camera );
+    
+    
     var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
     var intersects = raycaster.intersectObjects( objects, true );
-    console.log( intersects[0].point);
-    console.log( objects);
+
+    geometry.computeFaceNormals();
+
+    
+    //console.log( intersects[0].point);
+    console.log(intersects);
+    //console.log(objects[0].userData.name);
+    //console.log(objects[0].userData.name);
+    //console.log(objects);
+
+    scene.add(new THREE.ArrowHelper( raycaster.ray.direction, raycaster.ray.origin, 100, Math.random() * 0xffffff ));
+    
+    
 }
+
+
 
 $('body').on('click', function(e){
     onDocumentMouseDown(e);
+    //console.log(objects);
 });
 
 
