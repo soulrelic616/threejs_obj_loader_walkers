@@ -57,41 +57,54 @@ scene.add(backLight);
 var light = new THREE.AmbientLight( 0x404040, 5 ); // soft white light
 scene.add( light );
 
-/*var objLoader = new THREE.OBJLoader();
-objLoader.setPath('models/');
-objLoader.load('WALKERS.obj', function(object){
-    //object.position.y -= 60;
-    scene.add(object);
-});*/
 
-var mtlLoader = new THREE.MTLLoader();
+/*LOAD MULTIOPLE MODELS*/
+// Texture and OBJ loader
+var index = 0;
+let OBJfiles = ['AT-ACT','AT-ST']; 
+let _MTLLoader = new THREE.MTLLoader().setPath( 'models/' );
 
-/*LOAD AT ACT*/
-mtlLoader.setResourcePath('models/at-act/');
-mtlLoader.setPath('models/at-act/');
-mtlLoader.load('AT-ACT.mtl', function (materials) {
-    materials.preload();
-    
-    var objLoader = new THREE.OBJLoader();
-    objLoader.setMaterials(materials);
-    objLoader.setPath('models/at-act/');
-    objLoader.load('AT-ACT.obj', function(object){
-        //object.position.y -= 60;
-        object.userData.name = "at-act";
-        scene.add(object);
-        objects.push(object);
+// this function will load the next MTL and OBJ file in the queue
+function loadNextMTL () {
+
+    if (index > OBJfiles.length - 1) return;
+
+    _MTLLoader.load( OBJfiles[index]+'.mtl', function ( materials ) {
+        materials.preload();
+        new THREE.OBJLoader()
+            .setMaterials( materials )
+            .setPath( 'models/' )
+            .load( OBJfiles[index]+'.obj', function ( object ) {
+            
+            objectName = OBJfiles[index];
+            
+            object.userData.name = objectName;
+            //object.userData.class = "walker";
+            
+            scene.add(object);
+
+            object.position.x = 0;
+            object.position.y = 0;
+            object.position.z = 0;
+
+            objects.push(object);
+
+            index++; // incrememnt count and load the next OBJ
+            loadNextMTL();
+
+        });
+        //, onProgress, onError > These can be used to keep track of the loads
     });
-    
-});
+
+}
+
+loadNextMTL (); // kick off the preloading routine
+
 
 var objects = [];
-
 var geometry, material, mesh, INTERSECTED;
-
 var container = document.body;
-
 var mouseX, MouseY, vector;
-
 
 function actionFn( event ){
     event.preventDefault();
@@ -137,8 +150,10 @@ function actionFn( event ){
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 
+var objectName;
+
 // mouse listener
-document.addEventListener( 'mousedown', function( event ) {
+document.addEventListener( 'click', function( event ) {
 
     var rect = renderer.domElement.getBoundingClientRect();
     mouse.x = ( ( event.clientX - rect.left ) / ( rect.width - rect.left ) ) * 2 - 1;
@@ -148,16 +163,33 @@ document.addEventListener( 'mousedown', function( event ) {
 
     var intersects = raycaster.intersectObjects( objects, true );
 
-    console.log(intersects);
+    //console.log(intersects);
     
     if ( intersects.length > 0 ) {
+        
+        if (INTERSECTED != intersects[0].object) {
+            if (INTERSECTED) INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
+            INTERSECTED = intersects[0].object;
+            INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
+            INTERSECTED.material.color.setHex(130000);
+            
+            objectName = INTERSECTED.parent.userData.name;
+            
+            console.log(objectName);
+            //console.log(INTERSECTED.parent.position);
 
-        //info.innerHTML = 'INTERSECT Count: ' + ++count;
-        //console.log('no intersects');
+            camera.lookAt( INTERSECTED.parent.position ); 
+            
+        }
+        //container.style.cursor = 'pointer';
+        
+        //console.log(objects[0])
 
+    } else {
+        if (INTERSECTED) INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
+        INTERSECTED = null;
+        //container.style.cursor = 'auto';
     }
-    
-    console.log('click');
 
 }, false );
 
