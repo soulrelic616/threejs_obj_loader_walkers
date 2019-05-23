@@ -16,10 +16,19 @@ camera.position.y = 0.7667102560150264;
 camera.position.z = 9.867664273831625;
 */
 
-
 camera.position.x = 23.35238695426168;
 camera.position.y = 8.717253467074778;
 camera.position.z = -17.80472949084262;
+
+/*camera.position.x = 1.5269201550550067;
+camera.position.y = 1.0987784781012584;
+camera.position.z = 30.928029497498436;*/
+
+camera.position.x = 1.4577165903123466;
+camera.position.y = 1.227688408695487;
+camera.position.z = 31.201282339664896
+
+
 //camera.lookAt(scene.position);
 
 
@@ -102,23 +111,10 @@ function loadNextMTL () {
             .load( OBJfiles[index]+'.obj', function ( object ) {
             
             objectName = OBJfiles[index];
-            
             object.userData.name = objectName;
             //object.userData.class = "walker";
-            
             scene.add(object);
-
-            /*//reset positions
-            object.position.x = 0;
-            object.position.y = 0;
-            object.position.z = 0;*/
-            
-            //then move acording to place in z vector
-            //positionObjects(object, index, objectName);
-            //console.log(objectName);
-            
             objects.push(object);
-            
             
             index++; // incrememnt count and load the next OBJ
             loadNextMTL();
@@ -134,24 +130,8 @@ loadNextMTL (); // kick off the preloading routine
 
 /*REPOSITION OBJECTS*/
 function repositionObj(){
-    /*var objectsLength = objects.length;
-    for (var i = 0; i < objectsLength; i++){
-        
-        var objName = objects[i].userData.name;
-        
-        console.log(objName); 
-        
-        if(objName = 'AT-ACT'){
-            objects[i].position.z = -20;
-        } else if(objName = 'AT-ST'){
-            objects[i].position.z = -10;
-        }
-        
-    }*/
     objects.forEach(function(index, element){
-        
         var objName = index.userData.name;
-        
         if(objName == 'AT-ACT'){
             //objects[numb].position.z = -20;
             index.position.z = -10;
@@ -165,56 +145,21 @@ function repositionObj(){
             index.position.z = 10;
         } else if(objName == 'AT-TE'){
             index.position.z = 15;
+        } else if(objName == 'AT-DT'){
+            index.position.z = 20;
+        } else if(objName == 'AT-PT'){
+            index.position.z = 25;
+        } else if(objName == 'AT-RT'){
+            index.position.z = 30;
+            //camera.lookAt(index.position)
         }
-        
-        
-    })
+    });
 }
 
 var objects = [];
 var geometry, material, mesh, INTERSECTED;
 var container = document.body;
 var mouseX, MouseY, vector;
-
-function actionFn( event ){
-    event.preventDefault();
-    var mouseX = (event.clientX / window.innerWidth)*2-1;
-    var mouseY = -(event.clientY /window.innerHeight)*2+1;
-    var vector = new THREE.Vector3( mouseX, mouseY, 0.5 );
-    //projector.unprojectVector( vector, camera );
-    
-    var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
-    
-    /*var raycaster = new THREE.Raycaster();
-    
-    raycaster.setFromCamera( new THREE.Vector2(), camera );  */
-    
-    var intersects = raycaster.intersectObjects( objects, true );
-    
-    //console.log( intersects[0].point);
-    //console.log(intersects[0]);
-    //console.log(objects[0].userData.name);
-    //console.log(objects);
-    
-    if (intersects.length > 0) {
-        if (INTERSECTED != intersects[0].object) {
-            if (INTERSECTED) INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
-            INTERSECTED = intersects[0].object;
-            INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
-            INTERSECTED.material.color.setHex(130000);
-            
-            /*scene.add(new THREE.ArrowHelper( raycaster.ray.direction, raycaster.ray.origin, 100, Math.random() * 0xffffff ));*/
-            
-        }
-        container.style.cursor = 'pointer';
-    } else {
-        if (INTERSECTED) INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
-        INTERSECTED = null;
-        container.style.cursor = 'auto';
-    }
-    geometry.computeFaceNormals();
-
-}
 
 // find intersections
 var raycaster = new THREE.Raycaster();
@@ -250,6 +195,12 @@ document.addEventListener( 'click', function( event ) {
 
             //camera.lookAt( INTERSECTED.parent.position ); 
             
+            var walkerModel = INTERSECTED.parent;
+            
+            console.log(walkerModel);
+            
+            lookAtWalker(walkerModel);
+            
         }
         //container.style.cursor = 'pointer';
         
@@ -266,13 +217,47 @@ document.addEventListener( 'click', function( event ) {
 }, false );
 
 
+function lookAtWalker (thisWalker){
+    var from = {
+        x: camera.position.x,
+        y: camera.position.y,
+        z: camera.position.z
+    };
+    var to = {
+        x: thisWalker.position.x + 4,
+        y: thisWalker.position.y + 4,
+        z: thisWalker.position.z + 4
+    };
+    
+    var newX = thisWalker.position.x,
+        newY = thisWalker.position.y,
+        newZ = thisWalker.position.z
+    
+    var tween = new TWEEN.Tween(from)
+    .to(to, 600)
+    .easing(TWEEN.Easing.Linear.None)
+    .onUpdate(function () {
+        camera.position.set(this.x, this.y, this.z);
+        //camera.lookAt(new THREE.Vector3(0, 0, 0));
+        //camera.lookAt(new THREE.Vector3(newX, newY, newZ));
+        camera.lookAt(thisWalker.position);
+    })
+    .onComplete(function () {
+        controls.target.copy(scene.position);
+    })
+    .start();
+}
+
+
 var animate = function () {
-	requestAnimationFrame( animate );
+    TWEEN.update();
+    
+    requestAnimationFrame( animate );
 
     controls.update;
     
 	renderer.render(scene, camera);
-
+    
 };
 
 animate();
