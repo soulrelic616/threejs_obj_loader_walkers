@@ -57,11 +57,30 @@ scene.add(backLight);
 var light = new THREE.AmbientLight( 0x404040, 5 ); // soft white light
 scene.add( light );
 
+/*LOADING MANAGER*/
+var manager = new THREE.LoadingManager();
+manager.onStart = function ( url, itemsLoaded, itemsTotal ) {
+    console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+};
+
+manager.onLoad = function ( ) {
+    console.log( 'Loading complete!');
+};
+
+
+manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
+    console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+};
+
+manager.onError = function ( url ) {
+    console.log( 'There was an error loading ' + url );
+};
+
 
 /*LOAD MULTIOPLE MODELS*/
 // Texture and OBJ loader
 var index = 0;
-let OBJfiles = ['AT-ACT','AT-ST','AT-AT']; 
+let OBJfiles = ['AT-ACT','AT-ST','AT-AT','AT-DP','AT-AP','AT-TE','AT-DT','AT-PT','AT-RT']; 
 let _MTLLoader = new THREE.MTLLoader().setPath( 'models/' );
 
 // this function will load the next MTL and OBJ file in the queue
@@ -71,7 +90,7 @@ function loadNextMTL () {
 
     _MTLLoader.load( OBJfiles[index]+'.mtl', function ( materials ) {
         materials.preload();
-        new THREE.OBJLoader()
+        new THREE.OBJLoader(manager)
             .setMaterials( materials )
             .setPath( 'models/' )
             .load( OBJfiles[index]+'.obj', function ( object ) {
@@ -83,35 +102,29 @@ function loadNextMTL () {
             
             scene.add(object);
 
-            //reset positions
+            /*//reset positions
             object.position.x = 0;
             object.position.y = 0;
-            object.position.z = 0;
+            object.position.z = 0;*/
             
             //then move acording to place in z vector
-            positionObjects(object, objectName);
-
+            //positionObjects(object, index, objectName);
+            //console.log(objectName);
+            
             objects.push(object);
+            
             
             index++; // incrememnt count and load the next OBJ
             loadNextMTL();
+            
+            return objectName;
 
         });
         //, onProgress, onError > These can be used to keep track of the loads
     });
-
 }
 
 loadNextMTL (); // kick off the preloading routine
-
-
-function positionObjects(object, objectName){
-    if(objectName = 'at-act'){
-        //object.position.z = -5;
-    } else if(objectName = 'at-st'){
-        
-    }
-};
 
 
 var objects = [];
@@ -215,9 +228,7 @@ var animate = function () {
     controls.update;
     
 	renderer.render(scene, camera);
-    
-    //console.log(scene.position);
-    
+
 };
 
 animate();
