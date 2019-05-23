@@ -60,7 +60,7 @@ scene.add( light );
 /*LOADING MANAGER*/
 var manager = new THREE.LoadingManager();
 manager.onStart = function ( url, itemsLoaded, itemsTotal ) {
-    console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+    //console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
 };
 
 manager.onLoad = function ( ) {
@@ -69,7 +69,7 @@ manager.onLoad = function ( ) {
 
 
 manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
-    console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+    //console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
 };
 
 manager.onError = function ( url ) {
@@ -126,6 +126,36 @@ function loadNextMTL () {
 
 loadNextMTL (); // kick off the preloading routine
 
+/*REPOSITION OBJECTS*/
+function repositionObj(){
+    /*var objectsLength = objects.length;
+    for (var i = 0; i < objectsLength; i++){
+        
+        var objName = objects[i].userData.name;
+        
+        console.log(objName); 
+        
+        if(objName = 'AT-ACT'){
+            objects[i].position.z = -20;
+        } else if(objName = 'AT-ST'){
+            objects[i].position.z = -10;
+        }
+        
+    }*/
+    objects.forEach(function(index, element){
+        
+        var objName = index.userData.name;
+        
+        if(objName == 'AT-ACT'){
+            //objects[numb].position.z = -20;
+            index.position.z = -10;
+        } else if(objName == 'AT-ST'){
+            index.position.z = -5;
+        }
+        
+        
+    })
+}
 
 var objects = [];
 var geometry, material, mesh, INTERSECTED;
