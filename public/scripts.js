@@ -60,7 +60,7 @@ scene.add( light );
 /*LOADING MANAGER*/
 var manager = new THREE.LoadingManager();
 manager.onStart = function ( url, itemsLoaded, itemsTotal ) {
-    //console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+    console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
 };
 
 manager.onLoad = function ( ) {
@@ -69,7 +69,13 @@ manager.onLoad = function ( ) {
 
 
 manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
-    //console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+    console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+    
+    if(itemsLoaded == itemsTotal){
+        console.log('All items loaded!!!');
+        repositionObj();
+    }
+    
 };
 
 manager.onError = function ( url ) {
@@ -149,8 +155,16 @@ function repositionObj(){
         if(objName == 'AT-ACT'){
             //objects[numb].position.z = -20;
             index.position.z = -10;
-        } else if(objName == 'AT-ST'){
+        } else if(objName == 'AT-AT'){
             index.position.z = -5;
+        } else if(objName == 'AT-DP'){
+            index.position.z = 0;
+        } else if(objName == 'AT-ST'){
+            index.position.z = 5;
+        } else if(objName == 'AT-AP'){
+            index.position.z = 10;
+        } else if(objName == 'AT-TE'){
+            index.position.z = 15;
         }
         
         
