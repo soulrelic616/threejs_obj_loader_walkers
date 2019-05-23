@@ -20,7 +20,7 @@ camera.position.z = 9.867664273831625;
 camera.position.x = 23.35238695426168;
 camera.position.y = 8.717253467074778;
 camera.position.z = -17.80472949084262;
-camera.lookAt(scene.position);
+//camera.lookAt(scene.position);
 
 
 renderer.setClearColor( 0xffffff, 1 );
@@ -61,7 +61,7 @@ scene.add( light );
 /*LOAD MULTIOPLE MODELS*/
 // Texture and OBJ loader
 var index = 0;
-let OBJfiles = ['AT-ACT','AT-ST']; 
+let OBJfiles = ['AT-ACT','AT-ST','AT-AT']; 
 let _MTLLoader = new THREE.MTLLoader().setPath( 'models/' );
 
 // this function will load the next MTL and OBJ file in the queue
@@ -83,12 +83,16 @@ function loadNextMTL () {
             
             scene.add(object);
 
+            //reset positions
             object.position.x = 0;
             object.position.y = 0;
             object.position.z = 0;
+            
+            //then move acording to place in z vector
+            positionObjects(object, objectName);
 
             objects.push(object);
-
+            
             index++; // incrememnt count and load the next OBJ
             loadNextMTL();
 
@@ -99,6 +103,15 @@ function loadNextMTL () {
 }
 
 loadNextMTL (); // kick off the preloading routine
+
+
+function positionObjects(object, objectName){
+    if(objectName = 'at-act'){
+        //object.position.z = -5;
+    } else if(objectName = 'at-st'){
+        
+    }
+};
 
 
 var objects = [];
@@ -178,7 +191,7 @@ document.addEventListener( 'click', function( event ) {
             console.log(objectName);
             //console.log(INTERSECTED.parent.position);
 
-            camera.lookAt( INTERSECTED.parent.position ); 
+            //camera.lookAt( INTERSECTED.parent.position ); 
             
         }
         //container.style.cursor = 'pointer';
@@ -190,28 +203,21 @@ document.addEventListener( 'click', function( event ) {
         INTERSECTED = null;
         //container.style.cursor = 'auto';
     }
+    
+    
 
 }, false );
-
-
-$('body').on('mousemove', function(e){
-    //actionFn(e);
-    //console.log(objects); 
-});
 
 
 var animate = function () {
 	requestAnimationFrame( animate );
 
     controls.update;
-
+    
 	renderer.render(scene, camera);
     
-    //console.log(camera.position);
+    //console.log(scene.position);
     
 };
-
-
-
 
 animate();
