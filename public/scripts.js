@@ -16,21 +16,27 @@ camera.position.y = 0.7667102560150264;
 camera.position.z = 9.867664273831625;
 */
 
-camera.position.x = 23.35238695426168;
-camera.position.y = 8.717253467074778;
-camera.position.z = -17.80472949084262;
+/*camera.position.x = 1.49267143696583;
+camera.position.y = 1.1630709788456357;
+camera.position.z = 1.2807783706724414;*/
 
 /*camera.position.x = 1.5269201550550067;
 camera.position.y = 1.0987784781012584;
 camera.position.z = 30.928029497498436;*/
 
-camera.position.x = 1.4577165903123466;
+/*camera.position.x = 1.4577165903123466;
 camera.position.y = 1.227688408695487;
-camera.position.z = 31.201282339664896
+camera.position.z = 31.201282339664896*/
+
+camera.position.x = 2;
+camera.position.y = 2;
+camera.position.z = 2;
+
 
 
 //camera.lookAt(scene.position);
 
+//var camRot = -0.7853981633974483;
 
 renderer.setClearColor( 0xffffff, 1 );
 
@@ -69,16 +75,18 @@ scene.add( light );
 /*LOADING MANAGER*/
 var manager = new THREE.LoadingManager();
 manager.onStart = function ( url, itemsLoaded, itemsTotal ) {
-    console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+    /*console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );*/
 };
 
 manager.onLoad = function ( ) {
-    console.log( 'Loading complete!');
+    //console.log( 'Loading complete!');
+    /*camera.rotation.set(-0.7853981633974483,0.6154797086703874,0.6154797086703874);
+    camera.updateProjectionMatrix(); */
 };
 
 
 manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
-    console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+    /*console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );*/
     
     if(itemsLoaded == itemsTotal){
         console.log('All items loaded!!!');
@@ -134,24 +142,24 @@ function repositionObj(){
         var objName = index.userData.name;
         if(objName == 'AT-ACT'){
             //objects[numb].position.z = -20;
-            index.position.z = -10;
+            index.position.z = -40;
         } else if(objName == 'AT-AT'){
-            index.position.z = -5;
+            index.position.z = -35;
         } else if(objName == 'AT-DP'){
-            index.position.z = 0;
+            index.position.z = -30;
         } else if(objName == 'AT-ST'){
-            index.position.z = 5;
+            index.position.z = -25;
         } else if(objName == 'AT-AP'){
-            index.position.z = 10;
+            index.position.z = -20;
         } else if(objName == 'AT-TE'){
-            index.position.z = 15;
+            index.position.z = -15;
         } else if(objName == 'AT-DT'){
-            index.position.z = 20;
+            index.position.z = -10;
         } else if(objName == 'AT-PT'){
-            index.position.z = 25;
+            index.position.z = -5;
         } else if(objName == 'AT-RT'){
-            index.position.z = 30;
-            //camera.lookAt(index.position)
+            index.position.z = 0;
+            //camera.lookAt(index.position);
         }
     });
 }
@@ -186,7 +194,7 @@ document.addEventListener( 'click', function( event ) {
             if (INTERSECTED) INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
             INTERSECTED = intersects[0].object;
             INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
-            INTERSECTED.material.color.setHex(130000);
+            INTERSECTED.material.color.setHex(150000);
             
             objectName = INTERSECTED.parent.userData.name;
             
@@ -197,7 +205,9 @@ document.addEventListener( 'click', function( event ) {
             
             var walkerModel = INTERSECTED.parent;
             
-            console.log(walkerModel);
+            //console.log(walkerModel);
+            
+            //console.error(camera.position);
             
             lookAtWalker(walkerModel);
             
@@ -223,6 +233,11 @@ function lookAtWalker (thisWalker){
         y: camera.position.y,
         z: camera.position.z
     };
+    
+    //var from = camera.position.clone();
+    
+    //var from = controls.object.position;
+    
     var to = {
         x: thisWalker.position.x + 4,
         y: thisWalker.position.y + 4,
@@ -233,27 +248,98 @@ function lookAtWalker (thisWalker){
         newY = thisWalker.position.y,
         newZ = thisWalker.position.z
     
+    /*console.log(from);
+    console.log(to);*/
+    
+    //console.log(thisWalker.position)
+    
+    TWEEN.removeAll();    // remove previous tweens if needed
+    
     var tween = new TWEEN.Tween(from)
-    .to(to, 600)
+    .to(to, 800)
     .easing(TWEEN.Easing.Linear.None)
     .onUpdate(function () {
+        
         camera.position.set(this.x, this.y, this.z);
+        
+        //controls.dispose();
+        
+        controls.enabled = false;
+        
+        //camera.lookAt(this.x, this.y, this.z)
+            
         //camera.lookAt(new THREE.Vector3(0, 0, 0));
         //camera.lookAt(new THREE.Vector3(newX, newY, newZ));
-        camera.lookAt(thisWalker.position);
+        
+        //camera.lookAt(camera.position);
+        
+        //controls.update();
+        controls.target = new THREE.Vector3(newX, newY, newZ);
     })
     .onComplete(function () {
-        controls.target.copy(scene.position);
+        //controls.target.copy(scene.position);
+        //console.log(scene.position);
+        //controls.update();
+        
+        //controls.target.copy(controls.target);
+        
+        //TWEEN.removeAll(); 
+        camera.lookAt(thisWalker.position);
+        controls.enabled = true;
+        
+        startRotation = new THREE.Euler().copy( camera.rotation );
+        endRotation = new THREE.Euler().copy( camera.rotation );
+        
     })
     .start();
+    
+    var camLook = {
+        x: newX,
+        y: newY,
+        z: newZ
+    };
+    
+    /*var tween = new TWEEN.Tween( camAngle )
+    .to(camLook, 600)
+    .easing( TWEEN.Easing.Linear.None )
+    .onUpdate( function () {
+        camera.lookAt( thisWalker.position );
+    } )
+    .onComplete( function () {
+
+        camera.lookAt( thisWalker.position );
+
+    } )
+    .start();*/
+    
+    var tweenCam = new TWEEN.Tween( {rotation: startRotation} ).to( {rotation: endRotation}, 800 ).easing(TWEEN.Easing.Linear.None).onUpdate( function () {
+        //camera.lookAt( thisWalker.position );
+        //camera.updateProjectionMatrix();
+        
+        /*if(camRotX != -0.7853981633974483 ){
+            
+        }*/
+        
+    } ).start();
+    
 }
+
+/*Get camera direction for lookat*/
+var vector = new THREE.Vector3( 0, 0, -1 ),
+    camAngle;
+
+var startRotation,
+    endRotation;
 
 
 var animate = function () {
+    
     TWEEN.update();
     
     requestAnimationFrame( animate );
-
+    
+    startRotation = new THREE.Euler().copy( camera.rotation );
+    
     controls.update;
     
 	renderer.render(scene, camera);
