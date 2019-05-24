@@ -36,7 +36,8 @@ camera.position.z = 2;
 
 //camera.lookAt(scene.position);
 
-//var camRot = -0.7853981633974483;
+var camRot = 0.5235987755982987,
+    newRot;
 
 renderer.setClearColor( 0xffffff, 1 );
 
@@ -312,13 +313,18 @@ function lookAtWalker (thisWalker){
     } )
     .start();*/
     
+    newRot = camera.rotation.z;
+    
     var tweenCam = new TWEEN.Tween( {rotation: startRotation} ).to( {rotation: endRotation}, 800 ).easing(TWEEN.Easing.Linear.None).onUpdate( function () {
-        //camera.lookAt( thisWalker.position );
-        //camera.updateProjectionMatrix();
         
-        /*if(camRotX != -0.7853981633974483 ){
+        
+        if(newRot < camRot ){
+            camera.lookAt( thisWalker.position );
+            camera.updateProjectionMatrix();
+            console.log('YES');
+        } else {
             
-        }*/
+        }
         
     } ).start();
     
