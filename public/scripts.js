@@ -288,7 +288,7 @@ function lookAtWalker (thisWalker){
         camera.lookAt(thisWalker.position);
         controls.enabled = true;
         
-        startRotation = new THREE.Euler().copy( camera.rotation );
+        //startRotation = new THREE.Euler().copy( camera.rotation );
         endRotation = new THREE.Euler().copy( camera.rotation );
         
     })
@@ -313,20 +313,50 @@ function lookAtWalker (thisWalker){
     } )
     .start();*/
     
-    newRot = camera.rotation.z;
+    /*newRot = camera.rotation.z;
     
-    var tweenCam = new TWEEN.Tween( {rotation: startRotation} ).to( {rotation: endRotation}, 800 ).easing(TWEEN.Easing.Linear.None).onUpdate( function () {
+    var tweenCam = new TWEEN.Tween( {rotation: startRotation} ).to( {rotation: endRotation}, 800 ).easing(TWEEN.Easing.Linear.None)
+    .onUpdate( function () {
         
+        
+        //camera.lookAt( thisWalker.position );
+        camera.updateProjectionMatrix();
+        console.log('YES');
         
         if(newRot < camRot ){
-            camera.lookAt( thisWalker.position );
-            camera.updateProjectionMatrix();
-            console.log('YES');
+            
         } else {
             
         }
         
-    } ).start();
+    } ).start();*/
+    
+    var lookAtVector = controls.target;
+    console.log(lookAtVector);
+    
+//    var normalMatrix = new THREE.Matrix3().getNormalMatrix( thisWalker.matrixWorld );
+//    var worldNormal = new THREE.Vector3(0,0,1).applyMatrix3( normalMatrix ).normalize();
+//    var camPosition = new THREE.Vector3().copy(thisWalker.position).add(worldNormal.multiplyScalar(100));
+    
+    var rotateTween = new TWEEN.Tween(lookAtVector)
+    .to({
+        x: thisWalker.position.x,
+        y: thisWalker.position.y,
+        z: thisWalker.position.z
+    }, 4000)
+    .easing(TWEEN.Easing.Linear.None)
+    .onUpdate(function(){
+        camera.lookAt(lookAtVector);
+    })
+    .onComplete(function(){
+        lookAtVector.copy(thisWalker.position);
+    })
+    .start();
+
+    /*var goTween = new TWEEN.Tween(camera.position)
+    .to(camPosition, 4000)
+    .easing(TWEEN.Easing.Quadratic.InOut)
+    .start(); */
     
 }
 
@@ -350,6 +380,8 @@ var animate = function () {
     
 	renderer.render(scene, camera);
     
+    
+    //console.log(camera.rotation.z);
 };
 
 animate();
