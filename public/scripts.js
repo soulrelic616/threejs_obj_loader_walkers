@@ -1,7 +1,7 @@
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-var renderer = new THREE.WebGLRenderer();
+var renderer = new THREE.WebGLRenderer({alpha: true});
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
@@ -21,13 +21,13 @@ camera.position.z = 1;
 var camRot = 0.5235987755982987,
     newRot;
 
-renderer.setClearColor(0xffffff, 1);
+renderer.setClearColor(0x000000, 0);
 
 
-var scene = new THREE.Scene();
-fogColor = new THREE.Color(0xffffff);
+var scene = new THREE.Scene(); 
+//fogColor = new THREE.Color(0x000000);
 
-scene.background = fogColor;
+//scene.background = fogColor;
 //scene.fog = new THREE.Fog(fogColor, 0.0025, 20);
 
 
@@ -37,7 +37,6 @@ controls.enableDamping = true;
 controls.campingFactor = 0.25;
 controls.enableZoom = true;
 
-/*
 var keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 1.0);
 keyLight.position.set(-100, 0, 100);
 
@@ -47,10 +46,9 @@ fillLight.position.set(100, 0, 100);
 var backLight = new THREE.DirectionalLight(0xffffff, 1.0);
 backLight.position.set(100, 0, -100).normalize();
 
-scene.add(keyLight);
-scene.add(fillLight);
-scene.add(backLight);
-*/
+//scene.add(keyLight);
+//scene.add(fillLight);
+//scene.add(backLight);
 
 var light = new THREE.AmbientLight(0x404040, 5); // soft white light
 scene.add(light);
@@ -138,7 +136,7 @@ function repositionObj() {
             index.userData.class = "mediumWalker"
         } else if (objName == 'AT-AP') {
             index.position.z = -11;
-            index.position.x = 1;
+            index.position.x = 0.5;
             index.userData.class = "mediumWalker"
         } else if (objName == 'AT-TE') {
             index.position.z = -7;
