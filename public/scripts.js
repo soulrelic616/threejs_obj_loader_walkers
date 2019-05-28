@@ -12,29 +12,9 @@ var material = new THREE.MeshBasicMaterial({
 var cube = new THREE.Mesh(geometry, material);
 //scene.add( cube );
 
-/*
-camera.position.x = -1.1018233407389477;
-camera.position.y = 0.7667102560150264;
-camera.position.z = 9.867664273831625;
-*/
-
-/*camera.position.x = 1.49267143696583;
-camera.position.y = 1.1630709788456357;
-camera.position.z = 1.2807783706724414;*/
-
-/*camera.position.x = 1.5269201550550067;
-camera.position.y = 1.0987784781012584;
-camera.position.z = 30.928029497498436;*/
-
-/*camera.position.x = 1.4577165903123466;
-camera.position.y = 1.227688408695487;
-camera.position.z = 31.201282339664896*/
-
 camera.position.x = 2;
-camera.position.y = 2;
-camera.position.z = 2;
-
-
+camera.position.y = 1;
+camera.position.z = 1;
 
 //camera.lookAt(scene.position);
 
@@ -146,22 +126,31 @@ function repositionObj() {
         if (objName == 'AT-ACT') {
             //objects[numb].position.z = -20;
             index.position.z = -40;
+            index.userData.class = "bigWalker"
         } else if (objName == 'AT-AT') {
             index.position.z = -35;
+            index.userData.class = "bigWalker"
         } else if (objName == 'AT-DP') {
             index.position.z = -30;
+            index.userData.class = "smallWalker"
         } else if (objName == 'AT-ST') {
             index.position.z = -25;
+            index.userData.class = "smallWalker"
         } else if (objName == 'AT-AP') {
             index.position.z = -20;
+            index.userData.class = "mediumWalker"
         } else if (objName == 'AT-TE') {
             index.position.z = -15;
+            index.userData.class = "mediumWalker"
         } else if (objName == 'AT-DT') {
             index.position.z = -10;
+            index.userData.class = "smallWalker"
         } else if (objName == 'AT-PT') {
             index.position.z = -5;
+            index.userData.class = "smallWalker"
         } else if (objName == 'AT-RT') {
             index.position.z = 0;
+            index.userData.class = "smallWalker"
             //camera.lookAt(index.position);
         }
     });
@@ -175,6 +164,7 @@ var mouseX, MouseY, vector;
 // find intersections
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
+var intersects;
 
 var objectName;
 
@@ -184,12 +174,8 @@ document.addEventListener('click', function(event) {
     var rect = renderer.domElement.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / (rect.width - rect.left)) * 2 - 1;
     mouse.y = -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
-
     raycaster.setFromCamera(mouse, camera);
-
-    var intersects = raycaster.intersectObjects(objects, true);
-
-    //console.log(intersects);
+    intersects = raycaster.intersectObjects(objects, true);
 
     if (intersects.length > 0) {
 
@@ -224,13 +210,27 @@ document.addEventListener('click', function(event) {
         INTERSECTED = null;
         //container.style.cursor = 'auto';
     }
+    
+}, false);
 
 
-
+document.addEventListener('mousemove', function(event) {
+    var rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((event.clientX - rect.left) / (rect.width - rect.left)) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    intersects = raycaster.intersectObjects(objects, true);
+    if (intersects.length > 0) {
+        container.style.cursor = 'pointer';
+    } else {
+        container.style.cursor = 'auto';
+    }
 }, false);
 
 
 function lookAtWalker(thisWalker) {
+    var speed = 800;
+    
     var from = {
         x: camera.position.x,
         y: camera.position.y,
@@ -250,7 +250,7 @@ function lookAtWalker(thisWalker) {
     TWEEN.removeAll(); // remove previous tweens if needed
 
     var tween = new TWEEN.Tween(from)
-        .to(to, 800)
+    .to(to, speed)
         .easing(TWEEN.Easing.Linear.None)
         .onUpdate(function() {
             camera.position.set(this.x, this.y, this.z);
@@ -270,7 +270,7 @@ function lookAtWalker(thisWalker) {
             x: thisWalker.position.x,
             y: thisWalker.position.y,
             z: thisWalker.position.z
-        }, 800)
+        }, speed)
         .easing(TWEEN.Easing.Linear.None)
         .onUpdate(function() {
             camera.lookAt(lookAtVector);
