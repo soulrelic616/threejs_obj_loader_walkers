@@ -37,17 +37,17 @@ controls.enableDamping = true;
 controls.campingFactor = 0.25;
 controls.enableZoom = true;
 
-var keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 1.0);
+var keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 0.5);
 keyLight.position.set(-100, 0, 100);
 
-var fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(240, 100%, 75%)'), 0.75);
+var fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 0.2);
 fillLight.position.set(100, 0, 100);
 
-var backLight = new THREE.DirectionalLight(0xffffff, 1.0);
+var backLight = new THREE.DirectionalLight(0xffffff, 0.5);
 backLight.position.set(100, 0, -100).normalize();
 
 //scene.add(keyLight);
-//scene.add(fillLight);
+scene.add(fillLight);
 //scene.add(backLight);
 
 var light = new THREE.AmbientLight(0x404040, 5); // soft white light
@@ -233,7 +233,7 @@ function lookAtWalker(thisWalker) {
     } else if(walkerClass == 'mediumWalker'){
         to = {
             x: thisWalker.position.x + 3,
-            y: thisWalker.position.y + 2,
+            y: thisWalker.position.y + 3,
             z: thisWalker.position.z + 3
         };
     } else{
@@ -284,21 +284,22 @@ function lookAtWalker(thisWalker) {
         .start();
 }
 
-/*Get camera direction for lookat*/
-var vector = new THREE.Vector3(0, 0, -1),
-    camAngle;
-
-var startRotation,
-    endRotation;
-
+function getDescription(walker) {
+    $.get('https://starwars.fandom.com/wiki/All_Terrain_Recon_Transport').then(function (html) {
+        // Success response
+        var $mainbar = $(html).find('#canontab');
+        console.log($mainbar.html());
+    }, function () {
+        // Error response
+        console.log('Access denied');
+    });
+}
 
 var animate = function() {
 
     TWEEN.update();
 
     requestAnimationFrame(animate);
-
-    startRotation = new THREE.Euler().copy(camera.rotation);
 
     controls.update;
 
