@@ -12,6 +12,25 @@ var material = new THREE.MeshBasicMaterial({
 var cube = new THREE.Mesh(geometry, material);
 //scene.add( cube );
 
+var texture, floorMaterial, plane;
+
+texture = THREE.ImageUtils.loadTexture( 'models/floor_2.png' );
+
+// assuming you want the texture to repeat in both directions:
+texture.wrapS = THREE.RepeatWrapping; 
+texture.wrapT = THREE.RepeatWrapping;
+// how many times to repeat in each direction; the default is (1,1),
+//   which is probably why your example wasn't working
+texture.repeat.set( 200, 200 ); 
+floorMaterial = new THREE.MeshLambertMaterial({ map : texture });
+plane = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), floorMaterial);
+plane.material.side = THREE.DoubleSide;
+plane.position.x = 0;
+// rotation.z is rotation around the z-axis, measured in radians (rather than degrees)
+// Math.PI = 180 degrees, Math.PI / 2 = 90 degrees, etc.
+plane.rotation.z = Math.PI / 2;
+plane.rotation.x = Math.PI / 2;
+
 camera.position.x = 2;
 camera.position.y = 0.5;
 camera.position.z = 1;
@@ -25,10 +44,10 @@ renderer.setClearColor(0x000000, 0);
 
 
 var scene = new THREE.Scene(); 
-//fogColor = new THREE.Color(0x000000);
+fogColor = new THREE.Color(0x000000);
 
-//scene.background = fogColor;
-//scene.fog = new THREE.Fog(fogColor, 0.0025, 20);
+scene.background = fogColor;
+scene.fog = new THREE.Fog(fogColor, 0.0025, 30);
 
 
 
@@ -37,10 +56,12 @@ controls.enableDamping = true;
 controls.campingFactor = 0.25;
 controls.enableZoom = true;
 
+controls.maxPolarAngle = Math.PI/2.5; 
+
 var keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 0.5);
 keyLight.position.set(-100, 0, 100);
 
-var fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 0.2);
+var fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(240, 100%, 75%)'), 0.2);
 fillLight.position.set(100, 0, 100);
 
 var backLight = new THREE.DirectionalLight(0xffffff, 0.5);
@@ -71,6 +92,7 @@ manager.onProgress = function(url, itemsLoaded, itemsTotal) {
 
     if (itemsLoaded == itemsTotal) {
         console.log('All items loaded!!!');
+        scene.add(plane);
         repositionObj();
     }
 
@@ -149,6 +171,7 @@ function repositionObj() {
             index.userData.class = "smallWalker"
         } else if (objName == 'AT-RT') {
             index.position.z = 0;
+            index.rotation.x = 0.05;
             index.userData.class = "smallWalker"
             //camera.lookAt(index.position);
         }
