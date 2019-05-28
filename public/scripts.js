@@ -13,7 +13,7 @@ var cube = new THREE.Mesh(geometry, material);
 //scene.add( cube );
 
 camera.position.x = 2;
-camera.position.y = 1;
+camera.position.y = 0.5;
 camera.position.z = 1;
 
 //camera.lookAt(scene.position);
@@ -125,28 +125,29 @@ function repositionObj() {
         var objName = index.userData.name;
         if (objName == 'AT-ACT') {
             //objects[numb].position.z = -20;
-            index.position.z = -40;
+            index.position.z = -28;
             index.userData.class = "bigWalker"
         } else if (objName == 'AT-AT') {
-            index.position.z = -35;
+            index.position.z = -22;
             index.userData.class = "bigWalker"
         } else if (objName == 'AT-DP') {
-            index.position.z = -30;
-            index.userData.class = "smallWalker"
+            index.position.z = -17;
+            index.userData.class = "mediumWalker"
         } else if (objName == 'AT-ST') {
-            index.position.z = -25;
-            index.userData.class = "smallWalker"
+            index.position.z = -14;
+            index.userData.class = "mediumWalker"
         } else if (objName == 'AT-AP') {
-            index.position.z = -20;
+            index.position.z = -11;
+            index.position.x = 1;
             index.userData.class = "mediumWalker"
         } else if (objName == 'AT-TE') {
-            index.position.z = -15;
+            index.position.z = -7;
             index.userData.class = "mediumWalker"
         } else if (objName == 'AT-DT') {
-            index.position.z = -10;
-            index.userData.class = "smallWalker"
+            index.position.z = -4;
+            index.userData.class = "mediumWalker"
         } else if (objName == 'AT-PT') {
-            index.position.z = -5;
+            index.position.z = -2;
             index.userData.class = "smallWalker"
         } else if (objName == 'AT-RT') {
             index.position.z = 0;
@@ -170,7 +171,6 @@ var objectName;
 
 // mouse listener
 document.addEventListener('click', function(event) {
-
     var rect = renderer.domElement.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / (rect.width - rect.left)) * 2 - 1;
     mouse.y = -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
@@ -178,39 +178,22 @@ document.addEventListener('click', function(event) {
     intersects = raycaster.intersectObjects(objects, true);
 
     if (intersects.length > 0) {
-
         if (INTERSECTED != intersects[0].object) {
             if (INTERSECTED) INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
             INTERSECTED = intersects[0].object;
             INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
-            INTERSECTED.material.color.setHex(150000);
+            //INTERSECTED.material.color.setHex(150000);
 
             objectName = INTERSECTED.parent.userData.name;
 
             console.log(objectName);
-            //console.log(INTERSECTED.parent.position);
-
-            //camera.lookAt( INTERSECTED.parent.position ); 
-
             var walkerModel = INTERSECTED.parent;
-
-            //console.log(walkerModel);
-
-            //console.error(camera.position);
-
             lookAtWalker(walkerModel);
-
         }
-        //container.style.cursor = 'pointer';
-
-        //console.log(objects[0])
-
     } else {
         if (INTERSECTED) INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
         INTERSECTED = null;
-        //container.style.cursor = 'auto';
     }
-    
 }, false);
 
 
@@ -237,12 +220,32 @@ function lookAtWalker(thisWalker) {
         z: camera.position.z
     };
 
-    var to = {
-        x: thisWalker.position.x + 4,
-        y: thisWalker.position.y + 4,
-        z: thisWalker.position.z + 4
-    };
-
+    var to;
+    
+    var walkerClass = thisWalker.userData.class;
+    
+    console.log(walkerClass);
+    
+    if(walkerClass == 'smallWalker'){
+        to = {
+            x: thisWalker.position.x + 2,
+            y: thisWalker.position.y + 0.5,
+            z: thisWalker.position.z + 1
+        };
+    } else if(walkerClass == 'mediumWalker'){
+        to = {
+            x: thisWalker.position.x + 3,
+            y: thisWalker.position.y + 2,
+            z: thisWalker.position.z + 3
+        };
+    } else{
+        to = {
+            x: thisWalker.position.x + 10,
+            y: thisWalker.position.y + 8,
+            z: thisWalker.position.z + 5
+        };
+    }
+    
     var newX = thisWalker.position.x,
         newY = thisWalker.position.y,
         newZ = thisWalker.position.z
@@ -256,9 +259,11 @@ function lookAtWalker(thisWalker) {
             camera.position.set(this.x, this.y, this.z);
             controls.enabled = false;
             controls.target = new THREE.Vector3(newX, newY, newZ);
+            $('body').addClass('noclick');
         })
         .onComplete(function() {
             controls.enabled = true;
+            $('body').removeClass('noclick');
         })
         .start();
 
