@@ -237,10 +237,6 @@ function lookAtWalker(thisWalker) {
         z: camera.position.z
     };
 
-    //var from = camera.position.clone();
-
-    //var from = controls.object.position;
-
     var to = {
         x: thisWalker.position.x + 4,
         y: thisWalker.position.y + 4,
@@ -251,53 +247,20 @@ function lookAtWalker(thisWalker) {
         newY = thisWalker.position.y,
         newZ = thisWalker.position.z
 
-
     TWEEN.removeAll(); // remove previous tweens if needed
 
     var tween = new TWEEN.Tween(from)
         .to(to, 800)
         .easing(TWEEN.Easing.Linear.None)
         .onUpdate(function() {
-
             camera.position.set(this.x, this.y, this.z);
-
-            //controls.dispose();
-
             controls.enabled = false;
-
-            //camera.lookAt(this.x, this.y, this.z)
-
-            //camera.lookAt(new THREE.Vector3(0, 0, 0));
-            //camera.lookAt(new THREE.Vector3(newX, newY, newZ));
-
-            //camera.lookAt(camera.position);
-
-            //controls.update();
             controls.target = new THREE.Vector3(newX, newY, newZ);
         })
         .onComplete(function() {
-            //controls.target.copy(scene.position);
-            //console.log(scene.position);
-            //controls.update();
-
-            //controls.target.copy(controls.target);
-
-            //TWEEN.removeAll(); 
-            //camera.lookAt(thisWalker.position);
             controls.enabled = true;
-
-            //startRotation = new THREE.Euler().copy( camera.rotation );
-            endRotation = new THREE.Euler().copy(camera.rotation);
-
         })
         .start();
-
-    var camLook = {
-        x: newX,
-        y: newY,
-        z: newZ
-    };
-
 
     var lookAtVector = controls.target;
     console.log(lookAtVector);
@@ -316,12 +279,6 @@ function lookAtWalker(thisWalker) {
             lookAtVector.copy(thisWalker.position);
         })
         .start();
-
-    /*var goTween = new TWEEN.Tween(camera.position)
-    .to(camPosition, 4000)
-    .easing(TWEEN.Easing.Quadratic.InOut)
-    .start(); */
-
 }
 
 /*Get camera direction for lookat*/
