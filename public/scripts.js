@@ -1,7 +1,10 @@
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-var renderer = new THREE.WebGLRenderer({alpha: true});
+var renderer = new THREE.WebGLRenderer({
+    alpha: true,
+    antialias: true
+});
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
@@ -10,19 +13,22 @@ var material = new THREE.MeshBasicMaterial({
     color: 0xffffff
 });
 var cube = new THREE.Mesh(geometry, material);
-//scene.add( cube );
+cube.castShadow = true;
+cube.receiveShadow = true;
 
 var texture, floorMaterial, plane;
 
-texture = THREE.ImageUtils.loadTexture( 'models/floor_2.png' );
+texture = THREE.ImageUtils.loadTexture('models/floor_2.png');
 
 // assuming you want the texture to repeat in both directions:
-texture.wrapS = THREE.RepeatWrapping; 
+texture.wrapS = THREE.RepeatWrapping;
 texture.wrapT = THREE.RepeatWrapping;
 // how many times to repeat in each direction; the default is (1,1),
 //   which is probably why your example wasn't working
-texture.repeat.set( 200, 200 ); 
-floorMaterial = new THREE.MeshLambertMaterial({ map : texture });
+texture.repeat.set(200, 200);
+floorMaterial = new THREE.MeshLambertMaterial({
+    map: texture
+});
 plane = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), floorMaterial);
 plane.material.side = THREE.DoubleSide;
 plane.position.x = 0;
@@ -30,6 +36,9 @@ plane.position.x = 0;
 // Math.PI = 180 degrees, Math.PI / 2 = 90 degrees, etc.
 plane.rotation.z = Math.PI / 2;
 plane.rotation.x = Math.PI / 2;
+
+plane.castShadow = true;
+plane.receiveShadow = true;
 
 camera.position.x = 2;
 camera.position.y = 0.5;
@@ -41,9 +50,15 @@ var camRot = 0.5235987755982987,
     newRot;
 
 renderer.setClearColor(0x000000, 0);
+renderer.shadowMap.enabled = true;
+// to antialias the shadow
+renderer.shadowMapType = THREE.PCFSoftShadowMap;
+
+renderer.shadowMap.renderReverseSided = true; // default is true
+renderer.shadowMap.renderSingleSided = false; // default is true
 
 
-var scene = new THREE.Scene(); 
+var scene = new THREE.Scene();
 fogColor = new THREE.Color(0x000000);
 
 scene.background = fogColor;
@@ -56,7 +71,10 @@ controls.enableDamping = true;
 controls.campingFactor = 0.25;
 controls.enableZoom = true;
 
-controls.maxPolarAngle = Math.PI/2.5; 
+controls.maxPolarAngle = Math.PI / 2.5;
+
+controls.minDistance = 2;
+controls.maxDistance = 15;
 
 var keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 0.5);
 keyLight.position.set(-100, 0, 100);
@@ -65,14 +83,34 @@ var fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(240, 100%, 75%)'
 fillLight.position.set(100, 0, 100);
 
 var backLight = new THREE.DirectionalLight(0xffffff, 0.5);
+backLight.castShadow = true;
 backLight.position.set(100, 0, -100).normalize();
 
 //scene.add(keyLight);
-scene.add(fillLight);
+//scene.add(fillLight);///////////
 //scene.add(backLight);
 
-var light = new THREE.AmbientLight(0x404040, 5); // soft white light
-scene.add(light);
+var ambientLight = new THREE.AmbientLight(0x404040, 5); // soft white light
+scene.add(ambientLight);
+
+
+var near = 0.1;
+var far = 1000;
+// Add Lighting
+var light = new THREE.DirectionalLight(0xffffff, 5);
+light.position.set(0,10,10);
+light.target.position.set(1,0,0);
+light.shadow.camera.near = near;       
+light.shadow.camera.far = far;      
+light.shadow.camera.left = -15;
+light.shadow.camera.bottom = -15;
+light.shadow.camera.right = 15;
+light.shadow.camera.top	= 15;
+light.castShadow = true;
+light.shadow.mapSize.width = 2048;
+light.shadow.mapSize.height = 2048;
+//scene.add(light);
+
 
 /*LOADING MANAGER*/
 var manager = new THREE.LoadingManager();
@@ -93,6 +131,7 @@ manager.onProgress = function(url, itemsLoaded, itemsTotal) {
     if (itemsLoaded == itemsTotal) {
         console.log('All items loaded!!!');
         scene.add(plane);
+        //scene.add( cube );
         repositionObj();
     }
 
@@ -123,6 +162,10 @@ function loadNextMTL() {
 
                 objectName = OBJfiles[index];
                 object.userData.name = objectName;
+
+                object.castShadow = true;
+                object.receiveShadow = true;
+
                 //object.userData.class = "walker";
                 scene.add(object);
                 objects.push(object);
@@ -234,7 +277,7 @@ document.addEventListener('mousemove', function(event) {
 
 function lookAtWalker(thisWalker) {
     var speed = 800;
-    
+
     var from = {
         x: camera.position.x,
         y: camera.position.y,
@@ -242,39 +285,39 @@ function lookAtWalker(thisWalker) {
     };
 
     var to;
-    
+
     var walkerClass = thisWalker.userData.class;
-    
+
     console.log(walkerClass);
-    
-    if(walkerClass == 'smallWalker'){
+
+    if (walkerClass == 'smallWalker') {
         to = {
             x: thisWalker.position.x + 2,
             y: thisWalker.position.y + 0.5,
             z: thisWalker.position.z + 1
         };
-    } else if(walkerClass == 'mediumWalker'){
+    } else if (walkerClass == 'mediumWalker') {
         to = {
             x: thisWalker.position.x + 3,
             y: thisWalker.position.y + 3,
             z: thisWalker.position.z + 3
         };
-    } else{
+    } else {
         to = {
             x: thisWalker.position.x + 10,
             y: thisWalker.position.y + 8,
             z: thisWalker.position.z + 5
         };
     }
-    
+
     var newX = thisWalker.position.x,
         newY = thisWalker.position.y,
         newZ = thisWalker.position.z
 
-    TWEEN.removeAll(); // remove previous tweens if needed
+        TWEEN.removeAll(); // remove previous tweens if needed
 
     var tween = new TWEEN.Tween(from)
-    .to(to, speed)
+        .to(to, speed)
         .easing(TWEEN.Easing.Linear.None)
         .onUpdate(function() {
             camera.position.set(this.x, this.y, this.z);
@@ -308,11 +351,11 @@ function lookAtWalker(thisWalker) {
 }
 
 function getDescription(walker) {
-    $.get('https://starwars.fandom.com/wiki/All_Terrain_Recon_Transport').then(function (html) {
+    $.get('https://starwars.fandom.com/wiki/All_Terrain_Recon_Transport').then(function(html) {
         // Success response
         var $mainbar = $(html).find('#canontab');
         console.log($mainbar.html());
-    }, function () {
+    }, function() {
         // Error response
         console.log('Access denied');
     });
