@@ -189,6 +189,12 @@ function makeLabelCanvas(size, name) {
 
 function drawLabel(walker, size, name) {
     //var size= 20;
+    
+    //const walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
+    
+    console.log(walker.userData.name);
+    console.log(walker);
+    
     const canvas = makeLabelCanvas(size, name);
     const texture = new THREE.CanvasTexture(canvas);
     // because our canvas is likely not a power of 2
