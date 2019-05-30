@@ -142,6 +142,50 @@ manager.onError = function(url) {
 };
 
 
+/*CREATE LABELS WITH CANVAS*/
+
+function randInt(min, max) {
+    if (max === undefined) {
+        max = min;
+        min = 0;
+    }
+    return Math.random() * (max - min) + min | 0;
+}
+
+const labelGeometry = new THREE.PlaneBufferGeometry(1, 1);
+const x = randInt(256);
+const bodyRadiusTop = .4;
+const bodyRadiusBottom = .2;
+const bodyHeight = 2;
+
+function makeLabelCanvas(size, name) {
+    const borderSize = 2;
+    const ctx = document.createElement('canvas').getContext('2d');
+    const font =  `${size}px bold sans-serif`;
+    ctx.font = font;
+    // measure how long the name will be
+    const doubleBorderSize = borderSize * 2;
+    const width = ctx.measureText(name).width + doubleBorderSize;
+    const height = size + doubleBorderSize;
+    ctx.canvas.width = width;
+    ctx.canvas.height = height;
+
+    // need to set font again after resizing canvas
+    ctx.font = font;
+    ctx.textBaseline = 'top';
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = 'white';
+    ctx.fillText(name, borderSize, borderSize);
+
+    return ctx.canvas;
+    
+    console.log(ctx.canvas);
+    console.log('YAY!');
+}
+
+
 /*LOAD MULTIOPLE MODELS*/
 // Texture and OBJ loader
 var index = 0;
@@ -216,6 +260,39 @@ function repositionObj() {
             index.position.z = 0;
             index.rotation.x = 0.05;
             index.userData.class = "smallWalker"
+            
+            var size= 20;
+            const canvas = makeLabelCanvas(size, name);
+            const texture = new THREE.CanvasTexture(canvas);
+            // because our canvas is likely not a power of 2
+            // in both dimensions set the filtering appropriately.
+            texture.minFilter = THREE.LinearFilter;
+            texture.wrapS = THREE.ClampToEdgeWrapping;
+            texture.wrapT = THREE.ClampToEdgeWrapping;
+
+            const labelMaterial = new THREE.MeshBasicMaterial({
+                map: texture,
+                side: THREE.DoubleSide,
+                transparent: true,
+            });
+            
+            const root = new THREE.Object3D();
+            root.position.x = index.position.x;
+            const label = new THREE.Mesh(labelGeometry, labelMaterial);
+            root.add(label);
+            label.position.y = index.position.y * 4 / 5;
+            label.position.z = index.position.z;
+            label.rotation.x = 90;
+            
+            // if units are meters then 0.01 here makes size
+            // of the label into centimeters.
+            const labelBaseScale = 0.01;
+            label.scale.x = canvas.width  * labelBaseScale;
+            label.scale.y = canvas.height * labelBaseScale;
+
+            scene.add(root);
+            
+            makeLabelCanvas('test', 'test');
             //camera.lookAt(index.position);
         }
     });
