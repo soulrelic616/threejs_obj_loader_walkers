@@ -158,6 +158,8 @@ const bodyRadiusTop = .4;
 const bodyRadiusBottom = .2;
 const bodyHeight = 2;
 
+var walker;
+
 function makeLabelCanvas(size, name) {
     const borderSize = 2;
     const ctx = document.createElement('canvas').getContext('2d');
@@ -185,6 +187,40 @@ function makeLabelCanvas(size, name) {
     console.log('YAY!');
 }
 
+function drawLabel(walker, size, name) {
+    //var size= 20;
+    const canvas = makeLabelCanvas(size, name);
+    const texture = new THREE.CanvasTexture(canvas);
+    // because our canvas is likely not a power of 2
+    // in both dimensions set the filtering appropriately.
+    texture.minFilter = THREE.LinearFilter;
+    texture.wrapS = THREE.ClampToEdgeWrapping;
+    texture.wrapT = THREE.ClampToEdgeWrapping;
+
+    const labelMaterial = new THREE.MeshBasicMaterial({
+        map: texture,
+        side: THREE.DoubleSide,
+        transparent: true,
+    });
+
+    const root = new THREE.Object3D();
+    root.position.x = walker.position.x;
+    const label = new THREE.Mesh(labelGeometry, labelMaterial);
+    root.add(label);
+    label.position.y = (walker.position.y * 4 / 5) + 2;
+    label.position.z = walker.position.z;
+    label.rotation.y = Math.PI / 2;
+
+    // if units are meters then 0.01 here makes size
+    // of the label into centimeters.
+    const labelBaseScale = 0.01;
+    label.scale.x = canvas.width  * labelBaseScale;
+    label.scale.y = canvas.height * labelBaseScale;
+
+    scene.add(root);
+
+    makeLabelCanvas(size, name);
+};
 
 /*LOAD MULTIOPLE MODELS*/
 // Texture and OBJ loader
@@ -255,45 +291,13 @@ function repositionObj() {
             index.userData.class = "mediumWalker"
         } else if (objName == 'AT-PT') {
             index.position.z = -2;
-            index.userData.class = "smallWalker"
+            index.userData.class = "smallWalker";
+            drawLabel(index, 50, objName)
         } else if (objName == 'AT-RT') {
             index.position.z = 0;
             index.rotation.x = 0.05;
-            index.userData.class = "smallWalker"
-            
-            var size= 20;
-            const canvas = makeLabelCanvas(size, name);
-            const texture = new THREE.CanvasTexture(canvas);
-            // because our canvas is likely not a power of 2
-            // in both dimensions set the filtering appropriately.
-            texture.minFilter = THREE.LinearFilter;
-            texture.wrapS = THREE.ClampToEdgeWrapping;
-            texture.wrapT = THREE.ClampToEdgeWrapping;
-
-            const labelMaterial = new THREE.MeshBasicMaterial({
-                map: texture,
-                side: THREE.DoubleSide,
-                transparent: true,
-            });
-            
-            const root = new THREE.Object3D();
-            root.position.x = index.position.x;
-            const label = new THREE.Mesh(labelGeometry, labelMaterial);
-            root.add(label);
-            label.position.y = index.position.y * 4 / 5;
-            label.position.z = index.position.z;
-            label.rotation.x = 90;
-            
-            // if units are meters then 0.01 here makes size
-            // of the label into centimeters.
-            const labelBaseScale = 0.01;
-            label.scale.x = canvas.width  * labelBaseScale;
-            label.scale.y = canvas.height * labelBaseScale;
-
-            scene.add(root);
-            
-            makeLabelCanvas('test', 'test');
-            //camera.lookAt(index.position);
+            index.userData.class = "smallWalker";
+            drawLabel(index, 50, objName)
         }
     });
 }
