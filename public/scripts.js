@@ -254,13 +254,13 @@ function drawLabel(walker, wclass, name) {
 
     label.name = name;
     
-    /*if(name == 'AT-RT'){
+    if(name == 'AT-RT'){
         label.material.opacity = 1;
     } else{
         label.material.opacity = 0;
-    }*/
+    }
     
-    label.material.opacity = 1;
+    //label.material.opacity = 1;
     
     labelGroup.push(label);
     
@@ -505,8 +505,8 @@ function lookAtWalker(thisWalker) {
         //console.log(index.userData.labelName);
         new TWEEN.Tween( scene.getObjectByName(thisLabel).material )
             .to( { opacity: 1 }, 1000 )
-            .onUpdate(function() {
-                //index.material.opacity = 0;
+            .onStart(function() {
+                index.material.opacity = 0;
             })
             .start()
     });
