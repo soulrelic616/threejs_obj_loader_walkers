@@ -157,6 +157,8 @@ function randInt(min, max) {
     return Math.random() * (max - min) + min | 0;
 }
 
+var labelGroup = [];
+
 const labelGeometry = new THREE.PlaneBufferGeometry(1, 1);
 const x = randInt(256);
 const bodyRadiusTop = .4;
@@ -246,7 +248,15 @@ function drawLabel(walker, wclass, name) {
     label.scale.x = canvas.width  * labelBaseScale;
     label.scale.y = canvas.height * labelBaseScale;
 
+    label.name = name;
+    label.material.opacity = 0;
+    
+    
+    labelGroup.push(label);
+    
     scene.add(root);
+    
+    //console.log(label);
 
     makeLabelCanvas(size, name);
 };
@@ -477,6 +487,24 @@ function lookAtWalker(thisWalker) {
             lookAtVector.copy(thisWalker.position);
         })
         .start();
+    
+    //Label functions
+    var thisLabel = thisWalker.userData.name;
+    
+    console.log(thisLabel);
+    
+    var labelTween = labelGroup.forEach(function(index, element) {
+        console.log(index.userData.labelName);
+        new TWEEN.Tween( scene.getObjectByName(thisLabel).material )
+            .to( { opacity: 1 }, 1000 )
+            .onUpdate(function() {
+                index.material.opacity = 0;
+            })
+            .start()
+    });
+
+    
+    
 }
 
 function getDescription(walker) {
