@@ -202,6 +202,8 @@ function drawLabel(walker, wclass, name) {
         baseDistance = 0.80;
     } else if((name == 'AT-ST') || (name == 'AT-AP')){
         baseDistance = 1.5;
+    } else if(name == 'AT-RT'){
+        baseDistance = 0;
     } else if(name == 'AT-DP'){
         baseDistance = 0.6;
     } else if(name == 'AT-ACT'){
@@ -249,14 +251,16 @@ function drawLabel(walker, wclass, name) {
     label.scale.y = canvas.height * labelBaseScale;
 
     label.name = name;
-    label.material.opacity = 0;
     
+    if(name == 'AT-RT'){
+        
+    } else{
+        label.material.opacity = 0;
+    }
     
     labelGroup.push(label);
     
     scene.add(root);
-    
-    //console.log(label);
 
     makeLabelCanvas(size, name);
 };
