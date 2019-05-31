@@ -195,15 +195,18 @@ function makeLabelCanvas(size, name) {
 }
 
 function drawLabel(walker, wclass, name) {
+    console.log(wclass);
+    
     var size= 100;
-    var baseDistance;
+    var baseDistance,
+        baseScale;
     
     if(wclass == "smallWalker"){
         baseDistance = 0.80;
     } else if((name == 'AT-ST') || (name == 'AT-AP')){
         baseDistance = 1.5;
     } else if(name == 'AT-RT'){
-        baseDistance = 0;
+        baseDistance = 1;
     } else if(name == 'AT-DP'){
         baseDistance = 0.6;
     } else if(name == 'AT-ACT'){
@@ -214,13 +217,11 @@ function drawLabel(walker, wclass, name) {
         baseDistance = 0.99;
     }
     
-    console.log(wclass);
-    
-    
+    baseScale = 0.001;
     
     var walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
     
-    console.log(walker.children[0].geometry.boundingSphere.center.y);  
+    //console.log(walker.children[0].geometry.boundingSphere.center.y);
     
     const canvas = makeLabelCanvas(size, name);
     const texture = new THREE.CanvasTexture(canvas);
@@ -230,15 +231,15 @@ function drawLabel(walker, wclass, name) {
     texture.wrapS = THREE.ClampToEdgeWrapping;
     texture.wrapT = THREE.ClampToEdgeWrapping;
 
-    const labelMaterial = new THREE.MeshBasicMaterial({
+    const labelMaterial = new THREE.SpriteMaterial({
         map: texture,
-        side: THREE.DoubleSide,
+        //side: THREE.DoubleSide,
         transparent: true,
     });
 
     const root = new THREE.Object3D();
     root.position.x = walker.position.x;
-    var label = new THREE.Mesh(labelGeometry, labelMaterial);
+    var label = new THREE.Sprite(labelMaterial);
     root.add(label);
     label.position.y = walkerHeight + baseDistance;
     label.position.z = walker.position.z;
@@ -246,17 +247,20 @@ function drawLabel(walker, wclass, name) {
 
     // if units are meters then 0.01 here makes size
     // of the label into centimeters.
-    const labelBaseScale = 0.001;
+    var labelBaseScale = baseScale;
+    console.log(baseScale);
     label.scale.x = canvas.width  * labelBaseScale;
     label.scale.y = canvas.height * labelBaseScale;
 
     label.name = name;
     
-    if(name == 'AT-RT'){
-        
+    /*if(name == 'AT-RT'){
+        label.material.opacity = 1;
     } else{
         label.material.opacity = 0;
-    }
+    }*/
+    
+    label.material.opacity = 1;
     
     labelGroup.push(label);
     
@@ -495,14 +499,14 @@ function lookAtWalker(thisWalker) {
     //Label functions
     var thisLabel = thisWalker.userData.name;
     
-    console.log(thisLabel);
+    //console.log(thisLabel);
     
     var labelTween = labelGroup.forEach(function(index, element) {
-        console.log(index.userData.labelName);
+        //console.log(index.userData.labelName);
         new TWEEN.Tween( scene.getObjectByName(thisLabel).material )
             .to( { opacity: 1 }, 1000 )
             .onUpdate(function() {
-                index.material.opacity = 0;
+                //index.material.opacity = 0;
             })
             .start()
     });
