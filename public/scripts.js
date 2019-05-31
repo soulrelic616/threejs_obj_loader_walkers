@@ -128,14 +128,19 @@ manager.onLoad = function() {
 manager.onProgress = function(url, itemsLoaded, itemsTotal) {
     /*console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );*/
 
-    if (itemsLoaded == itemsTotal) {
-        console.log('All items loaded!!!');
+    /*console.log(itemsLoaded);
+    console.log(itemsTotal);*/
+    
+    if (itemsLoaded === itemsTotal) {
+        //console.log('All items loaded!!!');
         scene.add(plane);
         //scene.add( cube );
         repositionObj();
     }
 
 };
+
+manager
 
 manager.onError = function(url) {
     console.log('There was an error loading ' + url);
@@ -163,7 +168,7 @@ var walker;
 function makeLabelCanvas(size, name) {
     const borderSize = 2;
     const ctx = document.createElement('canvas').getContext('2d');
-    const font =  `${size}px bold sans-serif`;
+    var font =  `${size}px arial`;
     ctx.font = font;
     // measure how long the name will be
     const doubleBorderSize = borderSize * 2;
@@ -176,9 +181,9 @@ function makeLabelCanvas(size, name) {
     ctx.font = font;
     ctx.textBaseline = 'top';
 
-    ctx.fillStyle = 'blue';
+    ctx.fillStyle = 'transparent';
     ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = 'white';
+    ctx.fillStyle = 'yellow';
     ctx.fillText(name, borderSize, borderSize);
 
     return ctx.canvas;
@@ -190,10 +195,9 @@ function makeLabelCanvas(size, name) {
 function drawLabel(walker, size, name) {
     //var size= 20;
     
-    //const walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
+    var walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
     
-    console.log(walker.userData.name);
-    console.log(walker);
+    console.log(walker.children[0].geometry.boundingSphere.center.y);  
     
     const canvas = makeLabelCanvas(size, name);
     const texture = new THREE.CanvasTexture(canvas);
@@ -211,9 +215,9 @@ function drawLabel(walker, size, name) {
 
     const root = new THREE.Object3D();
     root.position.x = walker.position.x;
-    const label = new THREE.Mesh(labelGeometry, labelMaterial);
+    var label = new THREE.Mesh(labelGeometry, labelMaterial);
     root.add(label);
-    label.position.y = (walker.position.y * 4 / 5) + 2;
+    label.position.y = walkerHeight + 1;
     label.position.z = walker.position.z;
     label.rotation.y = Math.PI / 2;
 
@@ -251,7 +255,9 @@ function loadNextMTL() {
 
                 object.castShadow = true;
                 object.receiveShadow = true;
-
+                
+                object.children[0].geometry.computeBoundingSphere();
+            
                 //object.userData.class = "walker";
                 scene.add(object);
                 objects.push(object);
@@ -295,6 +301,7 @@ function repositionObj() {
         } else if (objName == 'AT-DT') {
             index.position.z = -4;
             index.userData.class = "mediumWalker"
+            drawLabel(index, 50, objName)
         } else if (objName == 'AT-PT') {
             index.position.z = -2;
             index.userData.class = "smallWalker";
@@ -302,7 +309,7 @@ function repositionObj() {
         } else if (objName == 'AT-RT') {
             index.position.z = 0;
             index.rotation.x = 0.05;
-            index.userData.class = "smallWalker";
+            index.userData.class = "smallWalker";            
             drawLabel(index, 50, objName)
         }
     });
