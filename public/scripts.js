@@ -168,7 +168,7 @@ var walker;
 function makeLabelCanvas(size, name) {
     const borderSize = 2;
     const ctx = document.createElement('canvas').getContext('2d');
-    var font =  `${size}px arial`;
+    var font =  `${size}px 'orbitron'`;
     ctx.font = font;
     // measure how long the name will be
     const doubleBorderSize = borderSize * 2;
@@ -192,8 +192,27 @@ function makeLabelCanvas(size, name) {
     return ctx.canvas;
 }
 
-function drawLabel(walker, size, name) {
-    //var size= 20;
+function drawLabel(walker, wclass, name) {
+    var size= 100;
+    var baseDistance;
+    
+    if(wclass == "smallWalker"){
+        baseDistance = 0.80;
+    } else if((name == 'AT-ST') || (name == 'AT-AP')){
+        baseDistance = 1.5;
+    } else if(name == 'AT-DP'){
+        baseDistance = 0.6;
+    } else if(name == 'AT-ACT'){
+        baseDistance = 4.2;
+    } else if ((name == 'AT-DP') || (name == 'AT-AT')){
+        baseDistance = 2;
+    } else{
+        baseDistance = 0.99;
+    }
+    
+    console.log(wclass);
+    
+    
     
     var walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
     
@@ -217,13 +236,13 @@ function drawLabel(walker, size, name) {
     root.position.x = walker.position.x;
     var label = new THREE.Mesh(labelGeometry, labelMaterial);
     root.add(label);
-    label.position.y = walkerHeight + 1;
+    label.position.y = walkerHeight + baseDistance;
     label.position.z = walker.position.z;
     label.rotation.y = Math.PI / 2;
 
     // if units are meters then 0.01 here makes size
     // of the label into centimeters.
-    const labelBaseScale = 0.01;
+    const labelBaseScale = 0.001;
     label.scale.x = canvas.width  * labelBaseScale;
     label.scale.y = canvas.height * labelBaseScale;
 
@@ -277,40 +296,56 @@ loadNextMTL(); // kick off the preloading routine
 /*REPOSITION OBJECTS*/
 function repositionObj() {
     objects.forEach(function(index, element) {
-        var objName = index.userData.name;
+        var objName = index.userData.name,
+            wclass;
         if (objName == 'AT-ACT') {
             //objects[numb].position.z = -20;
             index.position.z = -28;
             index.userData.class = "bigWalker"
+            wclass = index.userData.class;
+            drawLabel(index, wclass, objName);
         } else if (objName == 'AT-AT') {
             index.position.z = -22;
-            index.userData.class = "bigWalker"
+            index.userData.class = "bigWalker";
+            wclass = index.userData.class;
+            drawLabel(index, wclass, objName);
         } else if (objName == 'AT-DP') {
             index.position.z = -17;
-            index.userData.class = "mediumWalker"
+            index.userData.class = "mediumWalker";
+            wclass = index.userData.class;
+            drawLabel(index, wclass, objName);
         } else if (objName == 'AT-ST') {
             index.position.z = -14;
-            index.userData.class = "mediumWalker"
+            index.userData.class = "mediumWalker";
+            wclass = index.userData.class;
+            drawLabel(index, wclass, objName);
         } else if (objName == 'AT-AP') {
             index.position.z = -11;
             index.position.x = 0.5;
-            index.userData.class = "mediumWalker"
+            index.userData.class = "mediumWalker";
+            drawLabel(index, wclass, objName);
+            wclass = index.userData.class;
         } else if (objName == 'AT-TE') {
             index.position.z = -7;
-            index.userData.class = "mediumWalker"
+            index.userData.class = "mediumWalker";
+            wclass = index.userData.class;
+            drawLabel(index, wclass, objName);
         } else if (objName == 'AT-DT') {
             index.position.z = -4;
-            index.userData.class = "mediumWalker"
-            drawLabel(index, 50, objName)
+            index.userData.class = "mediumWalker";
+            wclass = index.userData.class;
+            drawLabel(index, wclass, objName);
         } else if (objName == 'AT-PT') {
             index.position.z = -2;
             index.userData.class = "smallWalker";
-            drawLabel(index, 50, objName)
+            wclass = index.userData.class;
+            drawLabel(index, wclass, objName);
         } else if (objName == 'AT-RT') {
             index.position.z = 0;
             index.rotation.x = 0.05;
-            index.userData.class = "smallWalker";            
-            drawLabel(index, 50, objName)
+            index.userData.class = "smallWalker";
+            wclass = index.userData.class;
+            drawLabel(index, wclass, objName);
         }
     });
 }
