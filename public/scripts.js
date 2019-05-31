@@ -186,10 +186,10 @@ function makeLabelCanvas(size, name) {
     ctx.fillStyle = 'yellow';
     ctx.fillText(name, borderSize, borderSize);
 
-    return ctx.canvas;
+    /*console.log(ctx.canvas);
+    console.log('YAY!');*/
     
-    console.log(ctx.canvas);
-    console.log('YAY!');
+    return ctx.canvas;
 }
 
 function drawLabel(walker, size, name) {
