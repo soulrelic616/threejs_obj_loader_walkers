@@ -531,7 +531,10 @@ function lookAtWalker(thisWalker) {
                 break;
             case 'AT-TE':
             case 'AT-AP':
-                increaseRatio = 1.2;
+            case 'AT-DT':
+            case 'AT-ST':
+            case 'AT-DP':
+                increaseRatio = 1.5;
                 break;
         };
         new TWEEN.Tween(scene.getObjectByName(thisLabel).scale)
@@ -539,7 +542,7 @@ function lookAtWalker(thisWalker) {
                 x: initialScale.x * increaseRatio,
                 y: initialScale.y * increaseRatio,
                 z: initialScale.z * increaseRatio
-            }, speed)
+            }, speed/1.5)
             .onStart(function() {
                 index.scale.x = initialScale.x;
                 index.scale.y = initialScale.y;
