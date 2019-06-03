@@ -201,12 +201,14 @@ function drawLabel(walker, wclass, name) {
     var baseDistance,
         baseScale;
     
-    if(wclass == "smallWalker"){
-        baseDistance = 0.80;
-    } else if((name == 'AT-ST') || (name == 'AT-AP')){
+    baseDistance = 0.80;
+    
+    if((name == 'AT-ST') || (name == 'AT-AP')){
         baseDistance = 1.5;
     } else if(name == 'AT-RT'){
-        baseDistance = 1;
+        baseDistance = 0.50;
+    } else if(name == 'AT-PT'){
+        baseDistance = 0.60;
     } else if(name == 'AT-DP'){
         baseDistance = 0.6;
     } else if(name == 'AT-ACT'){
@@ -508,7 +510,31 @@ function lookAtWalker(thisWalker) {
             .onStart(function() {
                 index.material.opacity = 0;
             })
-            .start()
+            .start();
+        
+        var initialScale = {
+            x: scene.getObjectByName(thisLabel).scale.x,
+            y: scene.getObjectByName(thisLabel).scale.y,
+            z: scene.getObjectByName(thisLabel).scale.z
+        };
+        
+        if((thisLabel == 'AT-AT') || (thisLabel == 'AT-ACT')){
+            new TWEEN.Tween( scene.getObjectByName(thisLabel).scale )
+                .to({ 
+                x: initialScale.x * 4,
+                y: initialScale.y * 4,
+                z: initialScale.z * 4
+            }, speed )
+                .onStart(function() {
+                index.scale.x = initialScale.x; 
+                index.scale.y = initialScale.y; 
+                index.scale.z = initialScale.z; 
+                console.log(index);
+            })
+                .start();
+        }
+        
+        
     });
 
     
