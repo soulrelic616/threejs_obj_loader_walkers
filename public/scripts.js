@@ -98,14 +98,14 @@ var near = 0.1;
 var far = 1000;
 // Add Lighting
 var light = new THREE.DirectionalLight(0xffffff, 5);
-light.position.set(0,10,10);
-light.target.position.set(1,0,0);
-light.shadow.camera.near = near;       
-light.shadow.camera.far = far;      
+light.position.set(0, 10, 10);
+light.target.position.set(1, 0, 0);
+light.shadow.camera.near = near;
+light.shadow.camera.far = far;
 light.shadow.camera.left = -15;
 light.shadow.camera.bottom = -15;
 light.shadow.camera.right = 15;
-light.shadow.camera.top	= 15;
+light.shadow.camera.top = 15;
 light.castShadow = true;
 light.shadow.mapSize.width = 2048;
 light.shadow.mapSize.height = 2048;
@@ -130,7 +130,7 @@ manager.onProgress = function(url, itemsLoaded, itemsTotal) {
 
     /*console.log(itemsLoaded);
     console.log(itemsTotal);*/
-    
+
     if (itemsLoaded === itemsTotal) {
         //console.log('All items loaded!!!');
         scene.add(plane);
@@ -170,7 +170,7 @@ var walker;
 function makeLabelCanvas(size, name) {
     const borderSize = 2;
     const ctx = document.createElement('canvas').getContext('2d');
-    var font =  `${size}px 'orbitron'`;
+    var font = `${size}px 'orbitron'`;
     ctx.font = font;
     // measure how long the name will be
     const doubleBorderSize = borderSize * 2;
@@ -190,41 +190,41 @@ function makeLabelCanvas(size, name) {
 
     /*console.log(ctx.canvas);
     console.log('YAY!');*/
-    
+
     return ctx.canvas;
 }
 
 function drawLabel(walker, wclass, name) {
     console.log(wclass);
-    
-    var size= 100;
+
+    var size = 100;
     var baseDistance,
         baseScale;
-    
+
     baseDistance = 0.80;
-    
-    if((name == 'AT-ST') || (name == 'AT-AP')){
+
+    if ((name == 'AT-ST') || (name == 'AT-AP')) {
         baseDistance = 1.5;
-    } else if(name == 'AT-RT'){
+    } else if (name == 'AT-RT') {
         baseDistance = 0.50;
-    } else if(name == 'AT-PT'){
+    } else if (name == 'AT-PT') {
         baseDistance = 0.60;
-    } else if(name == 'AT-DP'){
+    } else if (name == 'AT-DP') {
         baseDistance = 0.6;
-    } else if(name == 'AT-ACT'){
+    } else if (name == 'AT-ACT') {
         baseDistance = 4.2;
-    } else if ((name == 'AT-DP') || (name == 'AT-AT')){
+    } else if ((name == 'AT-DP') || (name == 'AT-AT')) {
         baseDistance = 2;
-    } else{
+    } else {
         baseDistance = 0.99;
     }
-    
+
     baseScale = 0.001;
-    
+
     var walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
-    
+
     //console.log(walker.children[0].geometry.boundingSphere.center.y);
-    
+
     const canvas = makeLabelCanvas(size, name);
     const texture = new THREE.CanvasTexture(canvas);
     // because our canvas is likely not a power of 2
@@ -251,21 +251,21 @@ function drawLabel(walker, wclass, name) {
     // of the label into centimeters.
     var labelBaseScale = baseScale;
     console.log(baseScale);
-    label.scale.x = canvas.width  * labelBaseScale;
+    label.scale.x = canvas.width * labelBaseScale;
     label.scale.y = canvas.height * labelBaseScale;
 
     label.name = name;
-    
-    if(name == 'AT-RT'){
+
+    if (name == 'AT-RT') {
         label.material.opacity = 1;
-    } else{
+    } else {
         label.material.opacity = 0;
     }
-    
+
     //label.material.opacity = 1;
-    
+
     labelGroup.push(label);
-    
+
     scene.add(root);
 
     makeLabelCanvas(size, name);
@@ -294,9 +294,9 @@ function loadNextMTL() {
 
                 object.castShadow = true;
                 object.receiveShadow = true;
-                
+
                 object.children[0].geometry.computeBoundingSphere();
-            
+
                 //object.userData.class = "walker";
                 scene.add(object);
                 objects.push(object);
@@ -497,48 +497,57 @@ function lookAtWalker(thisWalker) {
             lookAtVector.copy(thisWalker.position);
         })
         .start();
-    
+
     //Label functions
     var thisLabel = thisWalker.userData.name;
-    
+
     //console.log(thisLabel);
-    
+
     var labelTween = labelGroup.forEach(function(index, element) {
         //console.log(index.userData.labelName);
-        new TWEEN.Tween( scene.getObjectByName(thisLabel).material )
-            .to( { opacity: 1 }, 1000 )
+        new TWEEN.Tween(scene.getObjectByName(thisLabel).material)
+            .to({
+                opacity: 1
+            }, 1000)
             .onStart(function() {
                 index.material.opacity = 0;
             })
             .start();
-        
+
         var initialScale = {
             x: scene.getObjectByName(thisLabel).scale.x,
             y: scene.getObjectByName(thisLabel).scale.y,
             z: scene.getObjectByName(thisLabel).scale.z
         };
-        
-        if((thisLabel == 'AT-AT') || (thisLabel == 'AT-ACT')){
-            new TWEEN.Tween( scene.getObjectByName(thisLabel).scale )
-                .to({ 
-                x: initialScale.x * 4,
-                y: initialScale.y * 4,
-                z: initialScale.z * 4
-            }, speed )
-                .onStart(function() {
-                index.scale.x = initialScale.x; 
-                index.scale.y = initialScale.y; 
-                index.scale.z = initialScale.z; 
+
+        var increaseRatio;
+        switch (thisLabel) {
+            default:
+                increaseRatio = 1;
+                break;
+            case 'AT-ACT':
+            case 'AT-AT':
+                increaseRatio = 4;
+                break;
+            case 'AT-TE':
+            case 'AT-AP':
+                increaseRatio = 1.2;
+                break;
+        };
+        new TWEEN.Tween(scene.getObjectByName(thisLabel).scale)
+            .to({
+                x: initialScale.x * increaseRatio,
+                y: initialScale.y * increaseRatio,
+                z: initialScale.z * increaseRatio
+            }, speed)
+            .onStart(function() {
+                index.scale.x = initialScale.x;
+                index.scale.y = initialScale.y;
+                index.scale.z = initialScale.z;
                 console.log(index);
             })
-                .start();
-        }
-        
-        
+            .start();
     });
-
-    
-    
 }
 
 function getDescription(walker) {
