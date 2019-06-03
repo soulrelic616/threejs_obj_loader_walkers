@@ -176,7 +176,7 @@ function makeLabelCanvas(size, name) {
 }
 
 function drawLabel(walker, wclass, name) {
-    console.log(wclass);
+    //console.log(wclass);
 
     var size = 100;
     var baseDistance,
@@ -249,7 +249,7 @@ function drawLabel(walker, wclass, name) {
     // if units are meters then 0.01 here makes size
     // of the label into centimeters.
     var labelBaseScale = baseScale;
-    console.log(baseScale);
+    //console.log(baseScale);
     label.scale.x = canvas.width * labelBaseScale;
     label.scale.y = canvas.height * labelBaseScale;
 
@@ -272,6 +272,8 @@ function drawLabel(walker, wclass, name) {
 };
 
 /*CREATE WALKER DATA SETS*/
+var dataGroup = [];
+var jsonName;
 const labelGeometry = new THREE.PlaneBufferGeometry(1, 1);
 
 function makeDataCanvas(size, name) {
@@ -304,8 +306,8 @@ function drawData(walker, wclass, name) {
 
     //const walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
 
-    console.log(walker.userData.name);
-    console.log(walker);
+    /*console.log(walker.userData.name);
+    console.log(walker);*/
 
     var canvas = makeDataCanvas(size, name);
     var texture = new THREE.CanvasTexture(canvas);
@@ -338,9 +340,40 @@ function drawData(walker, wclass, name) {
 
     scene.add(root);
 
-    makeDataCanvas(size, name);
+    dataGroup.push(dataSet);
+    
+    console.log('the name is: '+name);
+    
+    jsonName = name.replace("-","");
+    
+    console.log('the JSON is: '+jsonName);
+    
+    loadJSON(jsonName);
+    
+    makeDataCanvas(size, jsonName);
 };
 
+/*Get data from JSON*/
+// load the JSON file
+var json;
+function loadJSON(walker) {
+    
+    
+    
+    $.getJSON('json/walkerData.json').done(function(data) {
+        if (!walker){
+            json = data;
+            console.log(data);    
+        } else{
+            json = data.walkers[walker];
+            console.log(json);
+        }
+    }).fail(function(jqxhr, textStatus, error) {
+        var err = textStatus + ", " + error;
+        console.log("Request Failed: " + err);
+    });
+};
+//loadJSON();
 
 /*LOAD MULTIOPLE MODELS*/
 // Texture and OBJ loader

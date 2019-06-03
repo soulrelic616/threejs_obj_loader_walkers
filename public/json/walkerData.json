@@ -1,0 +1,22 @@
+{
+    "walkers" : {
+        "ATRT" : {
+            "Name": "AT-RT",
+            "Manufacturer" : "Kuat Drive Yards",
+            "Model" : "3 meters",
+            "Size" : "3.45 meters",
+            "Armament": "Chin-mounted laser cannon, Mortar launcher",
+            "Crew":  "Pilot",
+            "Cargo capacity": "100kg"
+        },
+        "ATPT" : {
+            "Name": "AT-PT",
+            "Manufacturer" : "Kuat Drive Yards",
+            "Model" : "3 meters",
+            "Size" : "3.45 meters",
+            "Armament": "Chin-mounted laser cannon, Mortar launcher",
+            "Crew":  "Pilot",
+            "Cargo capacity": "100kg"
+        }
+    }
+}
