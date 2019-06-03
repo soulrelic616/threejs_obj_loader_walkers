@@ -219,7 +219,25 @@ function drawLabel(walker, wclass, name) {
         baseDistance = 0.99;
     }
 
-    baseScale = 0.001;
+    
+    switch(name){
+        default:
+            baseScale = 0.001;
+            break;
+        case 'AT-ACT':
+        case 'AT-AT':
+            baseScale = 0.004;
+            break;
+        case 'AT-TE':
+        case 'AT-AP':
+        case 'AT-DT':
+        case 'AT-ST':
+        case 'AT-DP':
+            baseScale = 0.002;
+            break;
+    }
+    
+    
 
     var walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
 
@@ -511,43 +529,6 @@ function lookAtWalker(thisWalker) {
             }, 1000)
             .onStart(function() {
                 index.material.opacity = 0;
-            })
-            .start();
-
-        var initialScale = {
-            x: scene.getObjectByName(thisLabel).scale.x,
-            y: scene.getObjectByName(thisLabel).scale.y,
-            z: scene.getObjectByName(thisLabel).scale.z
-        };
-
-        var increaseRatio;
-        switch (thisLabel) {
-            default:
-                increaseRatio = 1;
-                break;
-            case 'AT-ACT':
-            case 'AT-AT':
-                increaseRatio = 4;
-                break;
-            case 'AT-TE':
-            case 'AT-AP':
-            case 'AT-DT':
-            case 'AT-ST':
-            case 'AT-DP':
-                increaseRatio = 1.5;
-                break;
-        };
-        new TWEEN.Tween(scene.getObjectByName(thisLabel).scale)
-            .to({
-                x: initialScale.x * increaseRatio,
-                y: initialScale.y * increaseRatio,
-                z: initialScale.z * increaseRatio
-            }, speed/1.5)
-            .onStart(function() {
-                index.scale.x = initialScale.x;
-                index.scale.y = initialScale.y;
-                index.scale.z = initialScale.z;
-                console.log(index);
             })
             .start();
     });
