@@ -148,23 +148,7 @@ manager.onError = function(url) {
 
 
 /*CREATE LABELS WITH CANVAS*/
-
-function randInt(min, max) {
-    if (max === undefined) {
-        max = min;
-        min = 0;
-    }
-    return Math.random() * (max - min) + min | 0;
-}
-
 var labelGroup = [];
-
-const labelGeometry = new THREE.PlaneBufferGeometry(1, 1);
-const x = randInt(256);
-const bodyRadiusTop = .4;
-const bodyRadiusBottom = .2;
-const bodyHeight = 2;
-
 var walker;
 
 function makeLabelCanvas(size, name) {
@@ -187,9 +171,6 @@ function makeLabelCanvas(size, name) {
     ctx.fillRect(0, 0, width, height);
     ctx.fillStyle = 'yellow';
     ctx.fillText(name, borderSize, borderSize);
-
-    /*console.log(ctx.canvas);
-    console.log('YAY!');*/
 
     return ctx.canvas;
 }
@@ -289,6 +270,76 @@ function drawLabel(walker, wclass, name) {
     makeLabelCanvas(size, name);
 };
 
+/*CREATE WALKER DATA SETS*/
+const labelGeometry = new THREE.PlaneBufferGeometry(1, 1);
+
+function makeDataCanvas(size, name) {
+    const borderSize = 2;
+    const ctx = document.createElement('canvas').getContext('2d');
+    var font = `${size}px 'orbitron'`;
+    ctx.font = font;
+    // measure how long the name will be
+    const doubleBorderSize = borderSize * 2;
+    const width = ctx.measureText(name).width + doubleBorderSize;
+    const height = size + doubleBorderSize;
+    ctx.canvas.width = width;
+    ctx.canvas.height = height;
+
+    // need to set font again after resizing canvas
+    ctx.font = font;
+    ctx.textBaseline = 'top';
+
+    ctx.fillStyle = 'transparent';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = 'yellow';
+    ctx.fillText(name, borderSize, borderSize);
+
+    return ctx.canvas;
+}
+
+function drawData(walker, wclass, name) {
+    var size= 100;
+
+    //const walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
+
+    console.log(walker.userData.name);
+    console.log(walker);
+
+    const canvas = makeLabelCanvas(size, name);
+    const texture = new THREE.CanvasTexture(canvas);
+    // because our canvas is likely not a power of 2
+    // in both dimensions set the filtering appropriately.
+    texture.minFilter = THREE.LinearFilter;
+    texture.wrapS = THREE.ClampToEdgeWrapping;
+    texture.wrapT = THREE.ClampToEdgeWrapping;
+
+    const labelMaterial = new THREE.MeshBasicMaterial({
+        map: texture,
+        side: THREE.DoubleSide,
+        transparent: true,
+    });
+
+    const root = new THREE.Object3D();
+    root.position.x = walker.position.x + 0.5;
+    const label = new THREE.Mesh(labelGeometry, labelMaterial);
+    root.add(label);
+    label.position.y = walker.position.y + 0.01;
+    label.position.z = walker.position.z;
+    label.rotation.x = -Math.PI / 2;
+    label.rotation.z = Math.PI / 2;
+
+    // if units are meters then 0.01 here makes size
+    // of the label into centimeters.
+    const labelBaseScale = 0.001;
+    label.scale.x = canvas.width  * labelBaseScale;
+    label.scale.y = canvas.height * labelBaseScale;
+
+    scene.add(root);
+
+    makeDataCanvas(size, name);
+};
+
+
 /*LOAD MULTIOPLE MODELS*/
 // Texture and OBJ loader
 var index = 0;
@@ -384,6 +435,7 @@ function repositionObj() {
             index.userData.class = "smallWalker";
             wclass = index.userData.class;
             drawLabel(index, wclass, objName);
+            drawData(index, wclass, objName)
         }
     });
 }
@@ -427,7 +479,6 @@ document.addEventListener('click', function(event) {
     }
 }, false);
 
-
 document.addEventListener('mousemove', function(event) {
     var rect = renderer.domElement.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / (rect.width - rect.left)) * 2 - 1;
@@ -440,7 +491,6 @@ document.addEventListener('mousemove', function(event) {
         container.style.cursor = 'auto';
     }
 }, false);
-
 
 function lookAtWalker(thisWalker) {
     var speed = 800;
@@ -471,7 +521,7 @@ function lookAtWalker(thisWalker) {
         };
     } else {
         to = {
-            x: thisWalker.position.x + 10,
+            x: thisWalker.position.x + 11,
             y: thisWalker.position.y + 8,
             z: thisWalker.position.z + 5
         };
@@ -534,17 +584,6 @@ function lookAtWalker(thisWalker) {
     });
 }
 
-function getDescription(walker) {
-    $.get('https://starwars.fandom.com/wiki/All_Terrain_Recon_Transport').then(function(html) {
-        // Success response
-        var $mainbar = $(html).find('#canontab');
-        console.log($mainbar.html());
-    }, function() {
-        // Error response
-        console.log('Access denied');
-    });
-}
-
 var animate = function() {
 
     TWEEN.update();
@@ -554,9 +593,6 @@ var animate = function() {
     controls.update;
 
     renderer.render(scene, camera);
-
-
-    //console.log(camera.rotation.z);
 };
 
 animate();
