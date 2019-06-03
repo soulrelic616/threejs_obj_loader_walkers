@@ -357,9 +357,6 @@ function drawData(walker, wclass, name) {
 // load the JSON file
 var json;
 function loadJSON(walker) {
-    
-    
-    
     $.getJSON('json/walkerData.json').done(function(data) {
         if (!walker){
             json = data;
