@@ -253,6 +253,7 @@ function drawLabel(walker, wclass, name) {
     label.scale.x = canvas.width * labelBaseScale;
     label.scale.y = canvas.height * labelBaseScale;
 
+    //Gives labels a nameset
     label.name = name;
 
     if (name == 'AT-RT') {
@@ -267,34 +268,35 @@ function drawLabel(walker, wclass, name) {
 
     scene.add(root);
 
-    makeLabelCanvas(size, name);
+    //makeLabelCanvas(size, name);
 };
 
 /*CREATE WALKER DATA SETS*/
 const labelGeometry = new THREE.PlaneBufferGeometry(1, 1);
 
 function makeDataCanvas(size, name) {
-    const borderSize = 2;
-    const ctx = document.createElement('canvas').getContext('2d');
-    var font = `${size}px 'orbitron'`;
-    ctx.font = font;
+    var borderSize = 55;
+    var canvas = document.getElementById('dataLoad');
+    var context = canvas.getContext('2d');
+    var font = `${size}px arial`;
+    context.font = font;
     // measure how long the name will be
-    const doubleBorderSize = borderSize * 2;
-    const width = ctx.measureText(name).width + doubleBorderSize;
-    const height = size + doubleBorderSize;
-    ctx.canvas.width = width;
-    ctx.canvas.height = height;
+    var doubleBorderSize = borderSize * 2;
+    var width = context.measureText(name).width + doubleBorderSize;
+    var height = size + doubleBorderSize;
+    context.canvas.width = width;
+    context.canvas.height = height;
 
     // need to set font again after resizing canvas
-    ctx.font = font;
-    ctx.textBaseline = 'top';
+    context.font = font;
+    context.textBaseline = 'top';
 
-    ctx.fillStyle = 'transparent';
-    ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = 'yellow';
-    ctx.fillText(name, borderSize, borderSize);
+    context.fillStyle = 'black';
+    context.fillRect(0, 0, width, height);
+    context.fillStyle = 'white';
+    context.fillText(name, borderSize, borderSize);
 
-    return ctx.canvas;
+    return context.canvas;
 }
 
 function drawData(walker, wclass, name) {
@@ -305,34 +307,34 @@ function drawData(walker, wclass, name) {
     console.log(walker.userData.name);
     console.log(walker);
 
-    const canvas = makeLabelCanvas(size, name);
-    const texture = new THREE.CanvasTexture(canvas);
+    var canvas = makeDataCanvas(size, name);
+    var texture = new THREE.CanvasTexture(canvas);
     // because our canvas is likely not a power of 2
     // in both dimensions set the filtering appropriately.
     texture.minFilter = THREE.LinearFilter;
     texture.wrapS = THREE.ClampToEdgeWrapping;
     texture.wrapT = THREE.ClampToEdgeWrapping;
 
-    const labelMaterial = new THREE.MeshBasicMaterial({
+    var labelMaterial = new THREE.MeshBasicMaterial({
         map: texture,
         side: THREE.DoubleSide,
         transparent: true,
     });
 
-    const root = new THREE.Object3D();
+    var root = new THREE.Object3D();
     root.position.x = walker.position.x + 0.5;
-    const label = new THREE.Mesh(labelGeometry, labelMaterial);
-    root.add(label);
-    label.position.y = walker.position.y + 0.01;
-    label.position.z = walker.position.z;
-    label.rotation.x = -Math.PI / 2;
-    label.rotation.z = Math.PI / 2;
+    var dataSet = new THREE.Mesh(labelGeometry, labelMaterial);
+    root.add(dataSet);
+    dataSet.position.y = walker.position.y + 0.01;
+    dataSet.position.z = walker.position.z;
+    dataSet.rotation.x = -Math.PI / 2;
+    dataSet.rotation.z = Math.PI / 2;
 
     // if units are meters then 0.01 here makes size
-    // of the label into centimeters.
-    const labelBaseScale = 0.001;
-    label.scale.x = canvas.width  * labelBaseScale;
-    label.scale.y = canvas.height * labelBaseScale;
+    // of the dataSet into centimeters.
+    var dataBaseScale = 0.001;
+    dataSet.scale.x = canvas.width  * dataBaseScale;
+    dataSet.scale.y = canvas.height * dataBaseScale;
 
     scene.add(root);
 
