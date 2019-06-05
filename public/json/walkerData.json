@@ -1,21 +1,21 @@
 {
     "walkers" : {
         "ATRT" : {
-            "Name": "AT-RT",
+            "Name": "All Terrain Recon Transport",
             "Manufacturer" : "Kuat Drive Yards",
             "Model" : "3 meters",
             "Size" : "3.45 meters",
-            "Armament": "Chin-mounted laser cannon, Mortar launcher",
-            "Crew":  "Pilot",
+            "Armament": "Chin-mounted laser cannon, mortar launcher",
+            "Crew":  "1 Pilot",
             "Cargo capacity": "100kg"
         },
         "ATPT" : {
-            "Name": "AT-PT",
+            "Name": "All Terrain Personal Transport",
             "Manufacturer" : "Kuat Drive Yards",
             "Model" : "3 meters",
             "Size" : "3.45 meters",
-            "Armament": "Chin-mounted laser cannon, Mortar launcher",
-            "Crew":  "Pilot",
+            "Armament": "Twin blaster cannon, concussion grenade launcher",
+            "Crew":  "Pilot, Co-pilot (1) (later models)",
             "Cargo capacity": "100kg"
         }
     }

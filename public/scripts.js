@@ -274,12 +274,16 @@ function drawLabel(walker, wclass, name) {
 /*CREATE WALKER DATA SETS*/
 var dataGroup = [];
 var jsonName;
+var infoCards = []
 const labelGeometry = new THREE.PlaneBufferGeometry(1, 1);
 
 function makeDataCanvas(size, name) {
     var borderSize = 55;
-    var canvas = document.getElementById('dataLoad');
-    var context = canvas.getContext('2d');
+    /*var canvas = document.getElementById('dataLoad');
+    var context = canvas.getContext('2d');*/
+    
+    var context = document.createElement('canvas').getContext('2d');
+    
     var font = `${size}px arial`;
     context.font = font;
     // measure how long the name will be
@@ -342,11 +346,11 @@ function drawData(walker, wclass, name) {
 
     dataGroup.push(dataSet);
     
-    console.log('the name is: '+name);
+    //console.log('the name is: '+name);
     
     jsonName = name.replace("-","");
     
-    console.log('the JSON is: '+jsonName);
+    //console.log('the JSON is: '+jsonName);
     
     loadJSON(jsonName);
     
@@ -363,13 +367,34 @@ function loadJSON(walker) {
             console.log(data);    
         } else{
             json = data.walkers[walker];
-            console.log(json);
+            infoCards.push(json);
+            
+            getUnique(infoCards, 'Name');
+            
         }
     }).fail(function(jqxhr, textStatus, error) {
         var err = textStatus + ", " + error;
         console.log("Request Failed: " + err);
     });
 };
+
+function getUnique(arr, comp) {
+
+    var unique = arr
+    .map(e => e[comp])
+
+    // store the keys of the unique objects
+    .map((e, i, final) => final.indexOf(e) === i && i)
+
+    // eliminate the dead keys & store unique objects
+    .filter(e => arr[e]).map(e => arr[e]);
+
+    infoCards = unique;
+    
+    console.log(infoCards);
+    
+    //return unique;
+}
 //loadJSON();
 
 /*LOAD MULTIOPLE MODELS*/
@@ -461,13 +486,14 @@ function repositionObj() {
             index.userData.class = "smallWalker";
             wclass = index.userData.class;
             drawLabel(index, wclass, objName);
+            drawData(index, wclass, objName);
         } else if (objName == 'AT-RT') {
             index.position.z = 0;
             index.rotation.x = 0.05;
             index.userData.class = "smallWalker";
             wclass = index.userData.class;
             drawLabel(index, wclass, objName);
-            drawData(index, wclass, objName)
+            drawData(index, wclass, objName);
         }
     });
 }
@@ -581,7 +607,7 @@ function lookAtWalker(thisWalker) {
         .start();
 
     var lookAtVector = controls.target;
-    console.log(lookAtVector);
+    //console.log(lookAtVector);
 
     var rotateTween = new TWEEN.Tween(lookAtVector)
         .to({
