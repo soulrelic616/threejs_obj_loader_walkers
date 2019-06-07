@@ -152,14 +152,14 @@ var labelGroup = [];
 var walker;
 
 function makeLabelCanvas(size, name) {
-    const borderSize = 2;
-    const ctx = document.createElement('canvas').getContext('2d');
+    var borderSize = 2;
+    var ctx = document.createElement('canvas').getContext('2d');
     var font = `${size}px 'orbitron'`;
     ctx.font = font;
     // measure how long the name will be
-    const doubleBorderSize = borderSize * 2;
-    const width = ctx.measureText(name).width + doubleBorderSize;
-    const height = size + doubleBorderSize;
+    var doubleBorderSize = borderSize * 2;
+    var width = ctx.measureText(name).width + doubleBorderSize;
+    var height = size + doubleBorderSize;
     ctx.canvas.width = width;
     ctx.canvas.height = height;
 
@@ -284,6 +284,12 @@ function makeDataCanvas(size, name) {
     
     var context = document.createElement('canvas').getContext('2d');
     
+    /*var canvas = document.createElement('canvas');
+    
+    var canvas = canvas.setAttribute('id', name);
+    
+    var context = document.getElementById(name).getContext('2d');*/
+    
     var font = `${size}px arial`;
     context.font = font;
     // measure how long the name will be
@@ -313,7 +319,17 @@ function drawData(walker, wclass, name) {
     /*console.log(walker.userData.name);
     console.log(walker);*/
 
-    var canvas = makeDataCanvas(size, name);
+    //LOAD JSON!
+    //console.log('the name is: '+name);
+
+    jsonName = name.replace("-","");
+
+    console.log('the JSON is: '+jsonName);
+
+    loadJSON(jsonName);
+    
+    
+    var canvas = makeDataCanvas(size, jsonName);
     var texture = new THREE.CanvasTexture(canvas);
     // because our canvas is likely not a power of 2
     // in both dimensions set the filtering appropriately.
@@ -346,20 +362,13 @@ function drawData(walker, wclass, name) {
 
     dataGroup.push(dataSet);
     
-    //console.log('the name is: '+name);
-    
-    jsonName = name.replace("-","");
-    
-    //console.log('the JSON is: '+jsonName);
-    
-    loadJSON(jsonName);
-    
-    makeDataCanvas(size, jsonName);
+    //makeDataCanvas(size, jsonName);
 };
 
 /*Get data from JSON*/
 // load the JSON file
 var json;
+var walkerDetails;
 function loadJSON(walker) {
     $.getJSON('json/walkerData.json').done(function(data) {
         if (!walker){
@@ -371,6 +380,10 @@ function loadJSON(walker) {
             
             getUnique(infoCards, 'Name');
             
+            //Returns infoCard details
+            console.log(infoCards);
+            
+            return json;
         }
     }).fail(function(jqxhr, textStatus, error) {
         var err = textStatus + ", " + error;
@@ -391,11 +404,15 @@ function getUnique(arr, comp) {
 
     infoCards = unique;
     
-    console.log(infoCards);
+    //console.log(infoCards);
     
     //return unique;
 }
-//loadJSON();
+
+
+function buildDataDiv(data){
+    
+}
 
 /*LOAD MULTIOPLE MODELS*/
 // Texture and OBJ loader
