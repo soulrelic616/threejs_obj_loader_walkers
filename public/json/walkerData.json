@@ -17,6 +17,15 @@
             "Armament": "Twin blaster cannon, concussion grenade launcher",
             "Crew":  "Pilot, Co-pilot (1) (later models)",
             "Cargo": "100kg"
+        },
+        "ATDT" : {
+            "Name": "All Terrsain Defense Turret",
+            "Manufacturer" : "Kuat Drive Yards",
+            "Model" : "3 meters",
+            "Size" : "3.45 meters",
+            "Armament": "Twin blaster cannon, concussion grenade launcher",
+            "Crew":  "Pilot, Co-pilot (1) (later models)",
+            "Cargo": "100kg"
         }
     }
 }
