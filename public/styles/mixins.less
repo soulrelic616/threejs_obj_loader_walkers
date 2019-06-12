@@ -1,0 +1,216 @@
+//Mixins
+.b_radius (@value1){
+    -webkit-border-radius: @value1 + 0px;
+    -moz-border-radius: @value1 + 0px;
+    border-radius: @value1 + 0px;
+}
+
+.overall-padding (@padding: 15px 50px){
+    padding: @padding;
+}
+
+.clear{
+    width:100%;
+    display:block;
+    clear: both;
+    content:'';
+}
+
+.block{
+    display:block;
+}
+
+.center{
+    margin:0 auto;
+    float: none;
+}
+
+.solid_border{
+    border: solid 4px black;
+}
+
+.border-box{
+    box-sizing: border-box;
+}
+
+.visible{
+    opacity: 1!important; 
+    pointer-events: all!important;
+}
+
+.hidden{
+    opacity: 0!important;
+    pointer-events: none!important;
+}
+
+.force_hide{
+    display: none!important;
+}
+
+.unclickable{
+    pointer-events: none;
+}
+
+.text_shadow{
+    text-shadow: 0px 0px 19px #000000;
+}
+
+.bottom_shadow{
+    box-shadow: 0px 6px 7px 0px rgba(0,0,0,0.20);
+}
+
+.box_shadow{
+    box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.50);
+}
+
+.box_shadow_b{
+    box-shadow: rgba(0, 0, 0, 0.15) 5px 5px 3px;
+}
+
+//Transitions and effects
+.scale_down {
+    -webkit-transform: scale3d(0, 0, 0)!important;
+    -moz-transform: scale3d(0, 0, 0)!important;
+    -o-transform: scale3d(0, 0, 0)!important;
+    -ms-transform: scale3d(0, 0, 0)!important;
+    transform: scale3d(0, 0, 0)!important;
+}
+
+.scale_normal {
+    -webkit-transform: scale3d(1, 1, 1);
+    -moz-transform: scale3d(1, 1, 1);
+    -o-transform: scale3d(1, 1, 1);
+    -ms-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+}
+
+.ease{
+    -webkit-transition: all 850ms ease-in-out;
+    -moz-transition: all 850ms ease-in-out;
+    -o-transition: all 850ms ease-in-out;
+    transition: all 850ms ease-in-out;
+}
+
+.ease_slow{
+    -webkit-transition: all 1500ms ease-in-out;
+    -moz-transition: all 1500ms ease-in-out;
+    -o-transition: all 1500ms ease-in-out;
+    transition: all 1500ms ease-in-out;
+}
+
+.ease_slower{
+    -webkit-transition: all 1800ms ease-in-out;
+    -moz-transition: all 1800ms ease-in-out;
+    -o-transition: all 1800ms ease-in-out;
+    transition: all 1800ms ease-in-out;
+}
+
+.ease_slowest{
+    -webkit-transition: all 2100ms ease-in-out;
+    -moz-transition: all 2100ms ease-in-out;
+    -o-transition: all 2100ms ease-in-out;
+    transition: all 2100ms ease-in-out;
+}
+
+.ease_fast{
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+}
+
+.ease_bg{
+    transition: background-image 850ms ease-in-out;
+}
+
+.ease_xfast{
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    transition: all 0.2s;
+}
+
+//From main
+
+//show and hide
+.show{
+    opacity: 1;
+    pointer-events: all;
+}
+.hide{
+    opacity: 0;
+    pointer-events: none;
+}
+
+.AbsoluteCenter{
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%); 
+}
+
+.CenterX{
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+            transform: translateX(-50%);
+}
+
+.CenterY{
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+}
+
+.relativeCenter{
+    display: block;
+    margin: 0 auto;
+}
+
+//colours
+@glass_teal: #a6d6d0;
+@meadow_yellow: #f2d97d;
+@sea_teal: #589295;
+@bright_sun: #fdda4b;
+
+.gradient{
+    background: #f23071;
+    background: -moz-linear-gradient(top, #f23071 0%, #f9ef31 24%, #bb58d3 50%, #23db69 76%, #7db9e8 100%);
+    background: -webkit-linear-gradient(top, #f23071 0%,#f9ef31 24%,#bb58d3 50%,#23db69 76%,#7db9e8 100%);
+    background: linear-gradient(to bottom, #f23071 0%,#f9ef31 24%,#bb58d3 50%,#23db69 76%,#7db9e8 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f23071', endColorstr='#7db9e8',GradientType=0 );
+}
+
+//Generic HTML resets
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Chrome/Safari/Opera */
+    -khtml-user-select: none;    /* Konqueror */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+    user-select: none;           /* Non-prefixed version, currently
+    not supported by any browser */
+}
+
+body, html{
+    //background: transparent;
+    //padding: 0px;
+    height: 100%;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    .noselect;
+}
+
+textarea:focus, input:focus, button:focus{
+    outline: none;
+}
+
+
+sup, sub{
+    font-size: 60%;
+    vertical-align: super;
+    /*line-height: 80%;*/
+}
+sub{
+    vertical-align: sub!important;
+}

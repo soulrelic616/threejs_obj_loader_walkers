@@ -272,7 +272,7 @@ function drawLabel(walker, wclass, name) {
 };
 
 /*CREATE WALKER DATA SETS*/
-var dataGroup = [];
+var dataCards = [];
 var jsonName;
 var infoCards = []
 const labelGeometry = new THREE.PlaneBufferGeometry(1, 1);
@@ -314,6 +314,8 @@ function makeDataCanvas(size, name) {
 function drawData(walker, wclass, name) {
     var size= 100;
 
+    //Check function only gets triggered once
+    
     //const walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
 
     /*console.log(walker.userData.name);
@@ -328,6 +330,14 @@ function drawData(walker, wclass, name) {
 
     loadJSON(jsonName);
     
+    //create div with desired data and append to body
+    //console.log(infoCards[0][jsonName]); 
+    /*var dataDiv = "<div id='comment-"+result.comment_ID+"' class='binder-user-note'>" +
+        "<a href='?delete="+result.comment_ID+"' id='close-note'></a>" +
+        "<h1>I added this on: "+result.comment_date+"</h1>" +
+        "<p>"+result.comment_content+"</p>" +
+        "<a href='edit?"+result.comment_ID+"' id='editnote'></a>" +
+        "</div>";*/
     
     var canvas = makeDataCanvas(size, jsonName);
     var texture = new THREE.CanvasTexture(canvas);
@@ -360,7 +370,7 @@ function drawData(walker, wclass, name) {
 
     scene.add(root);
 
-    dataGroup.push(dataSet);
+    dataCards.push(dataSet);
     
     //makeDataCanvas(size, jsonName);
 };
@@ -375,13 +385,14 @@ function loadJSON(walker) {
             json = data;
             console.log(data);    
         } else{
-            json = data.walkers[walker];
+            //json = data.walkers[walker];
+            json = data.walkers;
             infoCards.push(json);
             
             getUnique(infoCards, 'Name');
             
             //Returns infoCard details
-            console.log(infoCards);
+            //console.log(infoCards);
             
             return json;
         }
