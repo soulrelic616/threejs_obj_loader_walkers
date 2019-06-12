@@ -200,11 +200,10 @@ function drawLabel(walker, wclass, name) {
         baseDistance = 0.99;
     }
 
-    
-    switch(name){
-        default:
-            baseScale = 0.001;
-            break;
+
+    switch (name) {
+        default: baseScale = 0.001;
+        break;
         case 'AT-ACT':
         case 'AT-AT':
             baseScale = 0.004;
@@ -217,8 +216,8 @@ function drawLabel(walker, wclass, name) {
             baseScale = 0.002;
             break;
     }
-    
-    
+
+
 
     var walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
 
@@ -281,15 +280,15 @@ function makeDataCanvas(size, name) {
     var borderSize = 55;
     /*var canvas = document.getElementById('dataLoad');
     var context = canvas.getContext('2d');*/
-    
+
     var context = document.createElement('canvas').getContext('2d');
-    
+
     /*var canvas = document.createElement('canvas');
     
     var canvas = canvas.setAttribute('id', name);
     
     var context = document.getElementById(name).getContext('2d');*/
-    
+
     var font = `${size}px arial`;
     context.font = font;
     // measure how long the name will be
@@ -312,10 +311,8 @@ function makeDataCanvas(size, name) {
 }
 
 function drawData(walker, wclass, name) {
-    var size= 100;
+    var size = 100;
 
-    //Check function only gets triggered once
-    
     //const walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
 
     /*console.log(walker.userData.name);
@@ -324,20 +321,22 @@ function drawData(walker, wclass, name) {
     //LOAD JSON!
     //console.log('the name is: '+name);
 
-    jsonName = name.replace("-","");
+    jsonName = name.replace("-", "");
 
-    console.log('the JSON is: '+jsonName);
+    console.log('the JSON is: ' + jsonName);
 
     loadJSON(jsonName);
     
-    //create div with desired data and append to body
-    //console.log(infoCards[0][jsonName]); 
-    /*var dataDiv = "<div id='comment-"+result.comment_ID+"' class='binder-user-note'>" +
-        "<a href='?delete="+result.comment_ID+"' id='close-note'></a>" +
-        "<h1>I added this on: "+result.comment_date+"</h1>" +
-        "<p>"+result.comment_content+"</p>" +
-        "<a href='edit?"+result.comment_ID+"' id='editnote'></a>" +
-        "</div>";*/
+    //once div is appended to body then draw to canvas
+    //drawDiv(jsonName);
+    
+    //console.log(imageGen);
+    html2canvas(document.querySelector("#"+jsonName)).then(canvas => {
+        document.body.appendChild(canvas)
+    });
+    
+    var makeCanvas;
+    
     
     var canvas = makeDataCanvas(size, jsonName);
     var texture = new THREE.CanvasTexture(canvas);
@@ -365,36 +364,77 @@ function drawData(walker, wclass, name) {
     // if units are meters then 0.01 here makes size
     // of the dataSet into centimeters.
     var dataBaseScale = 0.001;
-    dataSet.scale.x = canvas.width  * dataBaseScale;
+    dataSet.scale.x = canvas.width * dataBaseScale;
     dataSet.scale.y = canvas.height * dataBaseScale;
 
     scene.add(root);
 
     dataCards.push(dataSet);
+
     
-    //makeDataCanvas(size, jsonName);
 };
+
+
+var imageGen;
+function drawDiv(divName){
+    html2canvas(document.querySelector("#"+divName), function(canvasData){
+        onrendered: function makeImg(canvasData) {
+            var imgRec = canvasData.toDataURL("image/png");
+            console.log(imgRec);
+        }
+    }).then(canvasData => {
+        //document.body.appendChild(canvasData)
+        
+        imageGen = canvasData.toDataURL('image/png');
+        
+        //console.log(canvasData.toDataURL('image/png'));
+        /*console.log(canvasData);
+        return canvasData;*/
+        return imageGen;
+    });
+}
+
 
 /*Get data from JSON*/
 // load the JSON file
 var json;
 var walkerDetails;
+var dataDiv;
+
 function loadJSON(walker) {
     $.getJSON('json/walkerData.json').done(function(data) {
-        if (!walker){
+        if (!walker) {
             json = data;
-            console.log(data);    
-        } else{
+            console.log(data);
+        } else {
             //json = data.walkers[walker];
             json = data.walkers;
             infoCards.push(json);
-            
+
             getUnique(infoCards, 'Name');
-            
+
             //Returns infoCard details
-            //console.log(infoCards);
+            walkerDetails = infoCards[0][walker]
+            console.log(walkerDetails);
             
-            return json;
+            //create div with desired data and append to body
+            var dataDiv = "<div id='" + walker + "' class='dataDiv'>" +
+                "<h1>" + walkerDetails.Name + "'</h1>" +
+                "<p class='manufacturer'><span>Manufacturer:</span>" + walkerDetails.Manufacturer + "'</p>" +
+                "<p class='model'><span>Model:</span>" + walkerDetails.Model + "'</p>" +
+                "<p class='size'><span>Size:</span>" + walkerDetails.Size + "'</p>" +
+                "<p class='armament'><span>Armament:</span>" + walkerDetails.Armament + "'</p>" +
+                "<p class='crew'><span>Crew:</span>" + walkerDetails.Crew + "'</p>" +
+                "<p class='cargo'><span>Cargo capacity:</span>" + walkerDetails.Cargo + "'</p>" +
+                "</div>";
+            
+            $('body').after(dataDiv);
+            
+            /*//once div is appended to body then draw to canvas
+            drawDiv(walker);*/
+            
+            return dataDiv;
+            return infoCards;
         }
     }).fail(function(jqxhr, textStatus, error) {
         var err = textStatus + ", " + error;
@@ -405,7 +445,7 @@ function loadJSON(walker) {
 function getUnique(arr, comp) {
 
     var unique = arr
-    .map(e => e[comp])
+        .map(e => e[comp])
 
     // store the keys of the unique objects
     .map((e, i, final) => final.indexOf(e) === i && i)
@@ -414,15 +454,15 @@ function getUnique(arr, comp) {
     .filter(e => arr[e]).map(e => arr[e]);
 
     infoCards = unique;
-    
+
     //console.log(infoCards);
-    
+
     //return unique;
 }
 
 
-function buildDataDiv(data){
-    
+function buildDataDiv(data) {
+
 }
 
 /*LOAD MULTIOPLE MODELS*/

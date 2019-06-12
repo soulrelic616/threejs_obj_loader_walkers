@@ -7,7 +7,7 @@
             "Size" : "3.45 meters",
             "Armament": "Chin-mounted laser cannon, mortar launcher",
             "Crew":  "1 Pilot",
-            "Cargo capacity": "100kg"
+            "Cargo": "100kg"
         },
         "ATPT" : {
             "Name": "All Terrain Personal Transport",
@@ -16,7 +16,7 @@
             "Size" : "3.45 meters",
             "Armament": "Twin blaster cannon, concussion grenade launcher",
             "Crew":  "Pilot, Co-pilot (1) (later models)",
-            "Cargo capacity": "100kg"
+            "Cargo": "100kg"
         }
     }
 }
