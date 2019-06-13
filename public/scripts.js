@@ -279,36 +279,46 @@ var jsonName;
 var infoCards = []
 const labelGeometry = new THREE.PlaneBufferGeometry(1, 1);
 
-function makeDataCanvas(size, name) {
+function makeDataCanvas(size, content) {
     var borderSize = 55;
     /*var canvas = document.getElementById('dataLoad');
     var context = canvas.getContext('2d');*/
 
+    var content = document.getElementById(content);
+    
     var context = document.createElement('canvas').getContext('2d');
 
+    console.log(content);
+    
     /*var canvas = document.createElement('canvas');
 
     var canvas = canvas.setAttribute('id', name);
 
     var context = document.getElementById(name).getContext('2d');*/
 
-    var font = `${size}px arial`;
-    context.font = font;
+    /*var font = `${size}px arial`;
+    context.font = font;*/
     // measure how long the name will be
     var doubleBorderSize = borderSize * 2;
-    var width = context.measureText(name).width + doubleBorderSize;
-    var height = size + doubleBorderSize;
+   /* var width = context.measureText(name).width + doubleBorderSize;
+    var height = size + doubleBorderSize;*/
+    
+    var width = content.width + doubleBorderSize;
+    var height = content.height + doubleBorderSize;
+    
     context.canvas.width = width;
     context.canvas.height = height;
 
     // need to set font again after resizing canvas
-    context.font = font;
-    context.textBaseline = 'top';
+    /*context.font = font;
+    context.textBaseline = 'top';*/
 
-    context.fillStyle = 'black';
+    context.fillStyle = 'transparent';
     context.fillRect(0, 0, width, height);
     context.fillStyle = 'white';
-    context.fillText(name, borderSize, borderSize);
+    context.fillText(content, borderSize, borderSize);
+    
+    context.drawImage(content, 2,2);
 
     return context.canvas;
 }
@@ -571,7 +581,6 @@ function repositionObj(reposition) {
             console.log('the JSON is: '+jsonName);
 
             drawLabel(index, wclass, objName);
-            drawData(index, wclass, jsonName);
 
             walkerDetails = json.walkers[jsonName];
 
@@ -591,6 +600,25 @@ function repositionObj(reposition) {
                     "</div>";
 
                 console.log(dataDiv);
+                
+                $('body').after(dataDiv);
+                
+                //After appending divs to body, draw each into a canvas
+                
+                var canvasID = jsonName;
+                console.log('canvas ID IS: ' + canvasID);
+                
+                html2canvas(document.querySelector("." + jsonName)).then(canvasData => {
+                    //canvasData.id = '"' + canvasID + '"';
+                    canvasData.setAttribute('id', canvasID);
+                    canvasData.setAttribute('class', 'drawnCanvas');
+                    document.body.appendChild(canvasData);
+                    drawData(index, wclass, canvasID);
+                    console.log('here');
+                });
+                
+                
+                
             };
         }
         
