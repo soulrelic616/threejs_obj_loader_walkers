@@ -137,7 +137,11 @@ manager.onProgress = function(url, itemsLoaded, itemsTotal) {
         //scene.add( cube );
         repositionObj();
     }
-
+    
+    console.log(url);
+    
+    
+    
 };
 
 manager
@@ -201,10 +205,9 @@ function drawLabel(walker, wclass, name) {
     }
 
 
-    switch(name){
-        default:
-            baseScale = 0.001;
-            break;
+    switch (name) {
+        default: baseScale = 0.001;
+        break;
         case 'AT-ACT':
         case 'AT-AT':
             baseScale = 0.004;
@@ -277,44 +280,49 @@ var jsonName;
 var infoCards = []
 const labelGeometry = new THREE.PlaneBufferGeometry(1, 1);
 
-function makeDataCanvas(size, name) {
+function makeDataCanvas(size, content) {    
     var borderSize = 55;
     /*var canvas = document.getElementById('dataLoad');
     var context = canvas.getContext('2d');*/
 
+    var content = document.getElementById(content)
+    
     var context = document.createElement('canvas').getContext('2d');
 
     /*var canvas = document.createElement('canvas');
+    
+    var canvas = canvas.setAttribute('id', content);
+    
+    var context = document.getElementById(content).getContext('2d');*/
 
-    var canvas = canvas.setAttribute('id', name);
-
-    var context = document.getElementById(name).getContext('2d');*/
-
-    var font = `${size}px arial`;
-    context.font = font;
-    // measure how long the name will be
+    /*var font = `${size}px arial`;
+    context.font = font;*/
+    // measure how long the content will be
     var doubleBorderSize = borderSize * 2;
-    var width = context.measureText(name).width + doubleBorderSize;
-    var height = size + doubleBorderSize;
+    var width = content.width + doubleBorderSize;
+    var height = content.height + doubleBorderSize;
+    
+    //console.log(width);
+    
     context.canvas.width = width;
     context.canvas.height = height;
 
     // need to set font again after resizing canvas
-    context.font = font;
-    context.textBaseline = 'top';
+    /*context.font = font;
+    context.textBaseline = 'top';*/
 
-    context.fillStyle = 'black';
+    context.fillStyle = 'transparent';
     context.fillRect(0, 0, width, height);
     context.fillStyle = 'white';
-    context.fillText(name, borderSize, borderSize);
+    context.fillText(content, borderSize, borderSize);
 
+    context.drawImage(content, 2,2);
+    
     return context.canvas;
 }
 
 function drawData(walker, wclass, name) {
-    var size= 100;
-
-    //Check function only gets triggered once
+    var size = 100;
 
     //const walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
 
@@ -324,78 +332,178 @@ function drawData(walker, wclass, name) {
     //LOAD JSON!
     //console.log('the name is: '+name);
 
-    
+    jsonName = name.replace("-", "");
+
+    console.log('the JSON is: ' + jsonName);
 
     //loadJSON(jsonName);
-        
-    //console.log(infoCards[0][jsonName]);
-    
-    //$('body').after(dataDiv); 
-    
-    //buildDataDiv(jsonName);
-    //console.log(('.'+jsonName));
-    
-    var canvas = makeDataCanvas(size, jsonName);
-    var texture = new THREE.CanvasTexture(canvas);
-    // because our canvas is likely not a power of 2
-    // in both dimensions set the filtering appropriately.
-    texture.minFilter = THREE.LinearFilter;
-    texture.wrapS = THREE.ClampToEdgeWrapping;
-    texture.wrapT = THREE.ClampToEdgeWrapping;
 
-    var labelMaterial = new THREE.MeshBasicMaterial({
-        map: texture,
-        side: THREE.DoubleSide,
-        transparent: true,
+    //once div is appended to body then draw to canvas
+    //drawDiv(jsonName);
+
+    var canvasCopy;
+    
+    $.getJSON('json/walkerData.json').done(function(data) {
+        //json = data.walkers[walker];
+        json = data.walkers;
+        infoCards.push(json);
+        getUnique(infoCards, 'Name');
+
+        //Returns infoCard details
+        walkerDetails = infoCards[0][jsonName]
+        //console.log(walkerDetails);
+
+        //create div with desired data and append to body
+        var dataDiv = "<div class='" + jsonName + " dataDiv'>" +
+            "<h1>" + walkerDetails.Name + "'</h1>" +
+            "<p class='manufacturer'><span>Manufacturer:</span>" + walkerDetails.Manufacturer + "'</p>" +
+            "<p class='model'><span>Model:</span>" + walkerDetails.Model + "'</p>" +
+            "<p class='size'><span>Size:</span>" + walkerDetails.Size + "'</p>" +
+            "<p class='armament'><span>Armament:</span>" + walkerDetails.Armament + "'</p>" +
+            "<p class='crew'><span>Crew:</span>" + walkerDetails.Crew + "'</p>" +
+            "<p class='cargo'><span>Cargo capacity:</span>" + walkerDetails.Cargo + "'</p>" +
+            "</div>";
+
+        $('body').after(dataDiv);
+        
+        removeDups('.dataDiv', 'class');
+
+        var canvasID = jsonName;
+        console.log(canvasID);
+        
+        //console.log(imageGen);
+        html2canvas(document.querySelector("." + jsonName)).then(canvasData => {
+            //canvasData.id = '"' + canvasID + '"';
+            canvasData.setAttribute('id', canvasID);
+            canvasData.setAttribute('class', 'drawnCanvas');
+            document.body.appendChild(canvasData);
+            
+            removeDups('.drawnCanvas', 'id');
+            
+            //console.log(canvasData);
+            //console.log(canvasData.getContext('2d'));
+            
+            //canvasCopy = canvasData.getContext('2d');
+            
+            console.log('here');
+            
+            var canvas = makeDataCanvas(size, canvasID);
+            //var canvas = makeDataCanvas(size, canvasCopy);
+            var texture = new THREE.CanvasTexture(canvas);
+            // because our canvas is likely not a power of 2
+            // in both dimensions set the filtering appropriately.
+            texture.minFilter = THREE.LinearFilter;
+            texture.wrapS = THREE.ClampToEdgeWrapping;
+            texture.wrapT = THREE.ClampToEdgeWrapping;
+
+            var labelMaterial = new THREE.MeshBasicMaterial({
+                map: texture,
+                side: THREE.DoubleSide,
+                transparent: true,
+            });
+
+            var root = new THREE.Object3D();
+            root.position.x = walker.position.x + 0.5;
+            var dataSet = new THREE.Mesh(labelGeometry, labelMaterial);
+            
+            removeDupCard(dataCards, 'name');
+            
+            
+            dataSet.name = 'dataSet-'+name;
+            dataSet.position.y = walker.position.y + 0.01;
+            dataSet.position.z = walker.position.z;
+            dataSet.rotation.x = -Math.PI / 2;
+            dataSet.rotation.z = Math.PI / 2;
+
+            // if units are meters then 0.01 here makes size
+            // of the dataSet into centimeters.
+            var dataBaseScale = 0.001;
+            dataSet.scale.x = canvas.width * dataBaseScale;
+            dataSet.scale.y = canvas.height * dataBaseScale;
+
+            //console.log(dataSet.name);
+            
+            root.add(dataSet);
+            
+            
+            //console.log(root.children[0].name);
+            
+            console.log(root);
+            
+            scene.add(root);
+
+            dataCards.push(dataSet);
+            
+            return canvasCopy;
+        });
+        
+        return dataDiv;
+        return infoCards;
+    }).fail(function(jqxhr, textStatus, error) {
+        var err = textStatus + ", " + error;
+        console.log("Request Failed: " + err);
     });
 
-    var root = new THREE.Object3D();
-    root.position.x = walker.position.x + 0.5;
-    var dataSet = new THREE.Mesh(labelGeometry, labelMaterial);
-    root.add(dataSet);
-    dataSet.position.y = walker.position.y + 0.01;
-    dataSet.position.z = walker.position.z;
-    dataSet.rotation.x = -Math.PI / 2;
-    dataSet.rotation.z = Math.PI / 2;
-
-    // if units are meters then 0.01 here makes size
-    // of the dataSet into centimeters.
-    var dataBaseScale = 0.001;
-    dataSet.scale.x = canvas.width  * dataBaseScale;
-    dataSet.scale.y = canvas.height * dataBaseScale;
-
-    scene.add(root);
-
-    dataCards.push(dataSet);
 };
+
+
+function removeDups(elem, attr){
+    var seen = {};
+    $(elem).each(function(){
+        var duplicate = $(this).attr(attr);
+        if (seen[duplicate])
+            $(this).remove();
+        else
+            seen[duplicate] = true;
+    });
+}
+
+
+var imageGen;
+
+function drawDiv(divName) {
+    html2canvas(document.querySelector("#" + divName), function(canvasData) {
+        onrendered: function makeImg(canvasData) {
+            var imgRec = canvasData.toDataURL("image/png");
+            console.log(imgRec);
+        }
+    }).then(canvasData => {
+        //document.body.appendChild(canvasData)
+
+        imageGen = canvasData.toDataURL('image/png');
+
+        //console.log(canvasData.toDataURL('image/png'));
+        /*console.log(canvasData);
+        return canvasData;*/
+        return imageGen;
+    });
+}
+
 
 /*Get data from JSON*/
 // load the JSON file
 var json;
 var walkerDetails;
 var dataDiv;
+
 function loadJSON(walker) {
-    console.log('loaded');
     $.getJSON('json/walkerData.json').done(function(data) {
-        /*if (!walker){
+        if (!walker) {
             json = data;
-            console.log(data);  
-            console.log('no data provided');
-            
-        } else{
+            console.log(data);
+        } else {
             //json = data.walkers[walker];
             json = data.walkers;
             infoCards.push(json);
 
             getUnique(infoCards, 'Name');
+
             //Returns infoCard details
-            walkerDetails = infoCards[0][jsonName]
+            walkerDetails = infoCards[0][walker]
+            console.log(walkerDetails);
+
             //create div with desired data and append to body
-            //console.log(walkerDetails);
-            
-            //console.log(infoCards[0]);
-            
-            dataDiv = "<div class='" + jsonName + " dataDiv'>" +
+            var dataDiv = "<div id='" + walker + "' class='dataDiv'>" +
                 "<h1>" + walkerDetails.Name + "'</h1>" +
                 "<p class='manufacturer'><span>Manufacturer:</span>" + walkerDetails.Manufacturer + "'</p>" +
                 "<p class='model'><span>Model:</span>" + walkerDetails.Model + "'</p>" +
@@ -405,36 +513,28 @@ function loadJSON(walker) {
                 "<p class='cargo'><span>Cargo capacity:</span>" + walkerDetails.Cargo + "'</p>" +
                 "</div>";
 
-            //html2canvas(document.querySelector("." + jsonName)).then(canvasData => {
-                //canvasData.id = '"' + canvasID + '"';
-                //canvasData.setAttribute('id', jsonName);
-                //canvasData.setAttribute('class', 'drawnCanvas');
-                //document.body.appendChild(canvasData);
-
-                //removeDups('.drawnCanvas', 'id');
-            //});
+            $('body').after(dataDiv);
             
+            $('body')
+            
+            console.log(dataDiv);
+
+            /*//once div is appended to body then draw to canvas
+            drawDiv(walker);*/
+
             return dataDiv;
-        }*/
-        
-        json = data;
-        console.log(data);  
-        console.log('no data provided');
-        
-        return json;
-        
+            return infoCards;
+        }
     }).fail(function(jqxhr, textStatus, error) {
         var err = textStatus + ", " + error;
         console.log("Request Failed: " + err);
     });
 };
 
-loadJSON();
-
 function getUnique(arr, comp) {
 
     var unique = arr
-    .map(e => e[comp])
+        .map(e => e[comp])
 
     // store the keys of the unique objects
     .map((e, i, final) => final.indexOf(e) === i && i)
@@ -450,10 +550,17 @@ function getUnique(arr, comp) {
 }
 
 
-function buildDataDiv(dataID){
-    html2canvas(document.querySelector("." + dataID)).then(canvas => {
-        document.body.appendChild(canvas)
-    });
+function removeDupCard(cards, attribute) {
+    var unique = cards
+    .map(e => e[attribute])
+
+    // store the keys of the unique objects
+    .map((e, i, final) => final.indexOf(e) === i && i)
+
+    // eliminate the dead keys & store unique objects
+    .filter(e => cards[e]).map(e => cards[e]);
+
+    dataCards = unique;
 }
 
 /*LOAD MULTIOPLE MODELS*/
@@ -474,24 +581,24 @@ function loadNextMTL() {
             .setPath('models/')
             .load(OBJfiles[index] + '.obj', function(object) {
 
-            objectName = OBJfiles[index];
-            object.userData.name = objectName;
+                objectName = OBJfiles[index];
+                object.userData.name = objectName;
 
-            object.castShadow = true;
-            object.receiveShadow = true;
+                object.castShadow = true;
+                object.receiveShadow = true;
 
-            object.children[0].geometry.computeBoundingSphere();
+                object.children[0].geometry.computeBoundingSphere();
 
-            //object.userData.class = "walker";
-            scene.add(object);
-            objects.push(object);
+                //object.userData.class = "walker";
+                scene.add(object);
+                objects.push(object);
 
-            index++; // incrememnt count and load the next OBJ
-            loadNextMTL();
+                index++; // incrememnt count and load the next OBJ
+                loadNextMTL();
 
-            return objectName;
+                return objectName;
 
-        });
+            });
         //, onProgress, onError > These can be used to keep track of the loads
     });
 }
@@ -540,6 +647,7 @@ function repositionObj() {
             index.userData.class = "mediumWalker";
             wclass = index.userData.class;
             drawLabel(index, wclass, objName);
+            drawData(index, wclass, objName);
         } else if (objName == 'AT-PT') {
             index.position.z = -2;
             index.userData.class = "smallWalker";
@@ -554,11 +662,6 @@ function repositionObj() {
             drawLabel(index, wclass, objName);
             drawData(index, wclass, objName);
         }
-        
-        console.log(objName);
-        jsonName = objName.replace("-","");
-        console.log('the JSON is: '+jsonName);
-        console.log(json.walkers[jsonName]);
     });
 }
 
@@ -653,40 +756,40 @@ function lookAtWalker(thisWalker) {
         newY = thisWalker.position.y,
         newZ = thisWalker.position.z
 
-    TWEEN.removeAll(); // remove previous tweens if needed
+        TWEEN.removeAll(); // remove previous tweens if needed
 
     var tween = new TWEEN.Tween(from)
-    .to(to, speed)
-    .easing(TWEEN.Easing.Linear.None)
-    .onUpdate(function() {
-        camera.position.set(this.x, this.y, this.z);
-        controls.enabled = false;
-        controls.target = new THREE.Vector3(newX, newY, newZ);
-        $('body').addClass('noclick');
-    })
-    .onComplete(function() {
-        controls.enabled = true;
-        $('body').removeClass('noclick');
-    })
-    .start();
+        .to(to, speed)
+        .easing(TWEEN.Easing.Linear.None)
+        .onUpdate(function() {
+            camera.position.set(this.x, this.y, this.z);
+            controls.enabled = false;
+            controls.target = new THREE.Vector3(newX, newY, newZ);
+            $('body').addClass('noclick');
+        })
+        .onComplete(function() {
+            controls.enabled = true;
+            $('body').removeClass('noclick');
+        })
+        .start();
 
     var lookAtVector = controls.target;
     //console.log(lookAtVector);
 
     var rotateTween = new TWEEN.Tween(lookAtVector)
-    .to({
-        x: thisWalker.position.x,
-        y: thisWalker.position.y,
-        z: thisWalker.position.z
-    }, speed)
-    .easing(TWEEN.Easing.Linear.None)
-    .onUpdate(function() {
-        camera.lookAt(lookAtVector);
-    })
-    .onComplete(function() {
-        lookAtVector.copy(thisWalker.position);
-    })
-    .start();
+        .to({
+            x: thisWalker.position.x,
+            y: thisWalker.position.y,
+            z: thisWalker.position.z
+        }, speed)
+        .easing(TWEEN.Easing.Linear.None)
+        .onUpdate(function() {
+            camera.lookAt(lookAtVector);
+        })
+        .onComplete(function() {
+            lookAtVector.copy(thisWalker.position);
+        })
+        .start();
 
     //Label functions
     var thisLabel = thisWalker.userData.name;
@@ -697,11 +800,11 @@ function lookAtWalker(thisWalker) {
         //console.log(index.userData.labelName);
         new TWEEN.Tween(scene.getObjectByName(thisLabel).material)
             .to({
-            opacity: 1
-        }, 1000)
+                opacity: 1
+            }, 1000)
             .onStart(function() {
-            index.material.opacity = 0;
-        })
+                index.material.opacity = 0;
+            })
             .start();
     });
 }
