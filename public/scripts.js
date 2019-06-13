@@ -115,7 +115,7 @@ light.shadow.mapSize.height = 2048;
 /*LOADING MANAGER*/
 var manager = new THREE.LoadingManager();
 manager.onStart = function(url, itemsLoaded, itemsTotal) {
-    /*console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );*/
+    console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
 };
 
 manager.onLoad = function() {
@@ -131,8 +131,8 @@ manager.onProgress = function(url, itemsLoaded, itemsTotal) {
     /*console.log(itemsLoaded);
     console.log(itemsTotal);*/
 
-    if (itemsLoaded === itemsTotal) {
-        //console.log('All items loaded!!!');
+    if (itemsLoaded === 9) { //fires once
+        console.log(itemsTotal);
         scene.add(plane);
         //scene.add( cube );
         repositionObj();
@@ -335,6 +335,8 @@ function drawData(walker, wclass, name) {
     //buildDataDiv(jsonName);
     //console.log(('.'+jsonName));
     
+    
+    
     var canvas = makeDataCanvas(size, jsonName);
     var texture = new THREE.CanvasTexture(canvas);
     // because our canvas is likely not a power of 2
@@ -508,57 +510,68 @@ function repositionObj() {
             index.position.z = -28;
             index.userData.class = "bigWalker"
             wclass = index.userData.class;
-            drawLabel(index, wclass, objName);
         } else if (objName == 'AT-AT') {
             index.position.z = -22;
             index.userData.class = "bigWalker";
             wclass = index.userData.class;
-            drawLabel(index, wclass, objName);
         } else if (objName == 'AT-DP') {
             index.position.z = -17;
             index.userData.class = "mediumWalker";
             wclass = index.userData.class;
-            drawLabel(index, wclass, objName);
         } else if (objName == 'AT-ST') {
             index.position.z = -14;
             index.userData.class = "mediumWalker";
             wclass = index.userData.class;
-            drawLabel(index, wclass, objName);
         } else if (objName == 'AT-AP') {
             index.position.z = -11;
             index.position.x = 0.5;
             index.userData.class = "mediumWalker";
-            drawLabel(index, wclass, objName);
             wclass = index.userData.class;
         } else if (objName == 'AT-TE') {
             index.position.z = -7;
             index.userData.class = "mediumWalker";
             wclass = index.userData.class;
-            drawLabel(index, wclass, objName);
         } else if (objName == 'AT-DT') {
             index.position.z = -4;
             index.userData.class = "mediumWalker";
             wclass = index.userData.class;
-            drawLabel(index, wclass, objName);
         } else if (objName == 'AT-PT') {
             index.position.z = -2;
             index.userData.class = "smallWalker";
             wclass = index.userData.class;
-            drawLabel(index, wclass, objName);
-            drawData(index, wclass, objName);
         } else if (objName == 'AT-RT') {
             index.position.z = 0;
             index.rotation.x = 0.05;
             index.userData.class = "smallWalker";
             wclass = index.userData.class;
-            drawLabel(index, wclass, objName);
-            drawData(index, wclass, objName);
         }
+        
+        drawLabel(index, wclass, objName);
+        drawData(index, wclass, objName);
         
         console.log(objName);
         jsonName = objName.replace("-","");
         console.log('the JSON is: '+jsonName);
-        console.log(json.walkers[jsonName]);
+        
+        walkerDetails = json.walkers[jsonName];
+        
+        if(walkerDetails == undefined){
+            
+        } else{
+            console.log(walkerDetails);
+            console.log(walkerDetails.Name);
+            dataDiv = "<div class='" + jsonName + " dataDiv'>" +
+                "<h1>" + walkerDetails.Name + "'</h1>" +
+                "<p class='manufacturer'><span>Manufacturer:</span>" + walkerDetails.Manufacturer + "'</p>" +
+                "<p class='model'><span>Model:</span>" + walkerDetails.Model + "'</p>" +
+                "<p class='size'><span>Size:</span>" + walkerDetails.Size + "'</p>" +
+                "<p class='armament'><span>Armament:</span>" + walkerDetails.Armament + "'</p>" +
+                "<p class='crew'><span>Crew:</span>" + walkerDetails.Crew + "'</p>" +
+                "<p class='cargo'><span>Cargo capacity:</span>" + walkerDetails.Cargo + "'</p>" +
+                "</div>";
+
+            console.log(dataDiv);
+        };
     });
 }
 
