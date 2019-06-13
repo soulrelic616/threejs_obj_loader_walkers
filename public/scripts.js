@@ -131,11 +131,13 @@ manager.onProgress = function(url, itemsLoaded, itemsTotal) {
     /*console.log(itemsLoaded);
     console.log(itemsTotal);*/
 
+    repositionObj(true);
+    
     if (itemsLoaded === 9) { //fires once
         console.log(itemsTotal);
         scene.add(plane);
         //scene.add( cube );
-        repositionObj();
+        repositionObj(false);
     }
 
 };
@@ -337,7 +339,7 @@ function drawData(walker, wclass, name) {
     
     
     
-    var canvas = makeDataCanvas(size, jsonName);
+    var canvas = makeDataCanvas(size, name);
     var texture = new THREE.CanvasTexture(canvas);
     // because our canvas is likely not a power of 2
     // in both dimensions set the filtering appropriately.
@@ -501,77 +503,97 @@ function loadNextMTL() {
 loadNextMTL(); // kick off the preloading routine
 
 /*REPOSITION OBJECTS*/
-function repositionObj() {
+function repositionObj(reposition) {
     objects.forEach(function(index, element) {
         var objName = index.userData.name,
-            wclass;
-        if (objName == 'AT-ACT') {
-            //objects[numb].position.z = -20;
-            index.position.z = -28;
-            index.userData.class = "bigWalker"
             wclass = index.userData.class;
-        } else if (objName == 'AT-AT') {
-            index.position.z = -22;
-            index.userData.class = "bigWalker";
-            wclass = index.userData.class;
-        } else if (objName == 'AT-DP') {
-            index.position.z = -17;
-            index.userData.class = "mediumWalker";
-            wclass = index.userData.class;
-        } else if (objName == 'AT-ST') {
-            index.position.z = -14;
-            index.userData.class = "mediumWalker";
-            wclass = index.userData.class;
-        } else if (objName == 'AT-AP') {
-            index.position.z = -11;
-            index.position.x = 0.5;
-            index.userData.class = "mediumWalker";
-            wclass = index.userData.class;
-        } else if (objName == 'AT-TE') {
-            index.position.z = -7;
-            index.userData.class = "mediumWalker";
-            wclass = index.userData.class;
-        } else if (objName == 'AT-DT') {
-            index.position.z = -4;
-            index.userData.class = "mediumWalker";
-            wclass = index.userData.class;
-        } else if (objName == 'AT-PT') {
-            index.position.z = -2;
-            index.userData.class = "smallWalker";
-            wclass = index.userData.class;
-        } else if (objName == 'AT-RT') {
-            index.position.z = 0;
-            index.rotation.x = 0.05;
-            index.userData.class = "smallWalker";
-            wclass = index.userData.class;
+        
+        if(reposition){
+            if (objName == 'AT-ACT') {
+                //objects[numb].position.z = -20;
+                index.position.z = -28;
+                index.userData.class = "bigWalker"
+            } else if (objName == 'AT-AT') {
+                index.position.z = -22;
+                index.userData.class = "bigWalker";
+            } else if (objName == 'AT-DP') {
+                index.position.z = -17;
+                index.userData.class = "mediumWalker";
+            } else if (objName == 'AT-ST') {
+                index.position.z = -14;
+                index.userData.class = "mediumWalker";
+            } else if (objName == 'AT-AP') {
+                index.position.z = -11;
+                index.position.x = 0.5;
+            } else if (objName == 'AT-TE') {
+                index.position.z = -7;
+            } else if (objName == 'AT-DT') {
+                index.position.z = -4;
+            } else if (objName == 'AT-PT') {
+                index.position.z = -2;
+            } else if (objName == 'AT-RT') {
+                index.position.z = 0;
+                index.rotation.x = 0.05;
+            }
+        } else{
+            
+            if (objName == 'AT-ACT') {
+                index.userData.class = "bigWalker"
+                wclass = index.userData.class;
+            } else if (objName == 'AT-AT') {
+                index.userData.class = "bigWalker";
+                wclass = index.userData.class;
+            } else if (objName == 'AT-DP') {
+                index.userData.class = "mediumWalker";
+                wclass = index.userData.class;
+            } else if (objName == 'AT-ST') {
+                index.userData.class = "mediumWalker";
+                wclass = index.userData.class;
+            } else if (objName == 'AT-AP') {
+                index.userData.class = "mediumWalker";
+                wclass = index.userData.class;
+            } else if (objName == 'AT-TE') {
+                index.userData.class = "mediumWalker";
+                wclass = index.userData.class;
+            } else if (objName == 'AT-DT') {
+                index.userData.class = "mediumWalker";
+                wclass = index.userData.class;
+            } else if (objName == 'AT-PT') {
+                index.userData.class = "smallWalker";
+                wclass = index.userData.class;
+            } else if (objName == 'AT-RT') {
+                index.userData.class = "smallWalker";
+                wclass = index.userData.class;
+            }
+            
+            console.log(objName);
+            jsonName = objName.replace("-","");
+            console.log('the JSON is: '+jsonName);
+
+            drawLabel(index, wclass, objName);
+            drawData(index, wclass, jsonName);
+
+            walkerDetails = json.walkers[jsonName];
+
+            if(walkerDetails == undefined){
+
+            } else{
+                console.log(walkerDetails);
+                console.log(walkerDetails.Name);
+                dataDiv = "<div class='" + jsonName + " dataDiv'>" +
+                    "<h1>" + walkerDetails.Name + "'</h1>" +
+                    "<p class='manufacturer'><span>Manufacturer:</span>" + walkerDetails.Manufacturer + "'</p>" +
+                    "<p class='model'><span>Model:</span>" + walkerDetails.Model + "'</p>" +
+                    "<p class='size'><span>Size:</span>" + walkerDetails.Size + "'</p>" +
+                    "<p class='armament'><span>Armament:</span>" + walkerDetails.Armament + "'</p>" +
+                    "<p class='crew'><span>Crew:</span>" + walkerDetails.Crew + "'</p>" +
+                    "<p class='cargo'><span>Cargo capacity:</span>" + walkerDetails.Cargo + "'</p>" +
+                    "</div>";
+
+                console.log(dataDiv);
+            };
         }
         
-        drawLabel(index, wclass, objName);
-        drawData(index, wclass, objName);
-        
-        console.log(objName);
-        jsonName = objName.replace("-","");
-        console.log('the JSON is: '+jsonName);
-        
-        walkerDetails = json.walkers[jsonName];
-        
-        if(walkerDetails == undefined){
-            
-        } else{
-            console.log(walkerDetails);
-            console.log(walkerDetails.Name);
-            dataDiv = "<div class='" + jsonName + " dataDiv'>" +
-                "<h1>" + walkerDetails.Name + "'</h1>" +
-                "<p class='manufacturer'><span>Manufacturer:</span>" + walkerDetails.Manufacturer + "'</p>" +
-                "<p class='model'><span>Model:</span>" + walkerDetails.Model + "'</p>" +
-                "<p class='size'><span>Size:</span>" + walkerDetails.Size + "'</p>" +
-                "<p class='armament'><span>Armament:</span>" + walkerDetails.Armament + "'</p>" +
-                "<p class='crew'><span>Crew:</span>" + walkerDetails.Crew + "'</p>" +
-                "<p class='cargo'><span>Cargo capacity:</span>" + walkerDetails.Cargo + "'</p>" +
-                "</div>";
-
-            console.log(dataDiv);
-        };
     });
 }
 
