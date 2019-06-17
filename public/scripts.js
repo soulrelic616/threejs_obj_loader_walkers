@@ -142,8 +142,6 @@ manager.onProgress = function(url, itemsLoaded, itemsTotal) {
 
 };
 
-manager
-
 manager.onError = function(url) {
     console.log('There was an error loading ' + url);
 };
@@ -325,32 +323,9 @@ function makeDataCanvas(size, content) {
 
 function drawData(walker, wclass, name) {
     var size= 100;
-
-    //Check function only gets triggered once
-
-    //const walkerHeight = walker.children[0].geometry.boundingSphere.center.y;
-
-    /*console.log(walker.userData.name);
-    console.log(walker);*/
-
-    //LOAD JSON!
-    //console.log('the name is: '+name);
-
-    
-
-    //loadJSON(jsonName);
-        
-    //console.log(infoCards[0][jsonName]);
-    
-    //$('body').after(dataDiv); 
-    
-    //buildDataDiv(jsonName);
-    //console.log(('.'+jsonName));
-    
-    
-    
     var canvas = makeDataCanvas(size, name);
     var texture = new THREE.CanvasTexture(canvas);
+    
     // because our canvas is likely not a power of 2
     // in both dimensions set the filtering appropriately.
     texture.minFilter = THREE.LinearFilter;
@@ -362,11 +337,31 @@ function drawData(walker, wclass, name) {
         side: THREE.DoubleSide,
         transparent: true,
     });
+    
+    var xDistance;
+    
+    switch(name){
+        default:
+            xDistance = 0.5;
+            break;
+        case 'AT-ACT':
+        case 'AT-AT':
+            xDistance = 1;
+            break;
+        case 'AT-TE':
+        case 'AT-AP':
+        case 'AT-DT':
+        case 'AT-ST':
+        case 'AT-DP':
+            xDistance = 0.8;
+            break;
+    }
 
     var root = new THREE.Object3D();
     root.position.x = walker.position.x + 0.5;
     var dataSet = new THREE.Mesh(labelGeometry, labelMaterial);
     root.add(dataSet);
+    dataSet.position.x = walker.position.x + xDistance;
     dataSet.position.y = walker.position.y + 0.01;
     dataSet.position.z = walker.position.z;
     dataSet.rotation.x = -Math.PI / 2;
@@ -391,52 +386,11 @@ var dataDiv;
 function loadJSON(walker) {
     console.log('loaded');
     $.getJSON('json/walkerData.json').done(function(data) {
-        /*if (!walker){
-            json = data;
-            console.log(data);  
-            console.log('no data provided');
-            
-        } else{
-            //json = data.walkers[walker];
-            json = data.walkers;
-            infoCards.push(json);
-
-            getUnique(infoCards, 'Name');
-            //Returns infoCard details
-            walkerDetails = infoCards[0][jsonName]
-            //create div with desired data and append to body
-            //console.log(walkerDetails);
-            
-            //console.log(infoCards[0]);
-            
-            dataDiv = "<div class='" + jsonName + " dataDiv'>" +
-                "<h1>" + walkerDetails.Name + "'</h1>" +
-                "<p class='manufacturer'><span>Manufacturer:</span>" + walkerDetails.Manufacturer + "'</p>" +
-                "<p class='model'><span>Model:</span>" + walkerDetails.Model + "'</p>" +
-                "<p class='size'><span>Size:</span>" + walkerDetails.Size + "'</p>" +
-                "<p class='armament'><span>Armament:</span>" + walkerDetails.Armament + "'</p>" +
-                "<p class='crew'><span>Crew:</span>" + walkerDetails.Crew + "'</p>" +
-                "<p class='cargo'><span>Cargo capacity:</span>" + walkerDetails.Cargo + "'</p>" +
-                "</div>";
-
-            //html2canvas(document.querySelector("." + jsonName)).then(canvasData => {
-                //canvasData.id = '"' + canvasID + '"';
-                //canvasData.setAttribute('id', jsonName);
-                //canvasData.setAttribute('class', 'drawnCanvas');
-                //document.body.appendChild(canvasData);
-
-                //removeDups('.drawnCanvas', 'id');
-            //});
-            
-            return dataDiv;
-        }*/
-        
         json = data;
         console.log(data);  
         console.log('no data provided');
         
         return json;
-        
     }).fail(function(jqxhr, textStatus, error) {
         var err = textStatus + ", " + error;
         console.log("Request Failed: " + err);
@@ -456,11 +410,11 @@ function getUnique(arr, comp) {
     // eliminate the dead keys & store unique objects
     .filter(e => arr[e]).map(e => arr[e]);
 
-    infoCards = unique;
+    arr = unique;
 
     //console.log(infoCards);
 
-    //return unique;
+    return arr;
 }
 
 
@@ -522,16 +476,12 @@ function repositionObj(reposition) {
             if (objName == 'AT-ACT') {
                 //objects[numb].position.z = -20;
                 index.position.z = -28;
-                index.userData.class = "bigWalker"
             } else if (objName == 'AT-AT') {
                 index.position.z = -22;
-                index.userData.class = "bigWalker";
             } else if (objName == 'AT-DP') {
                 index.position.z = -17;
-                index.userData.class = "mediumWalker";
             } else if (objName == 'AT-ST') {
                 index.position.z = -14;
-                index.userData.class = "mediumWalker";
             } else if (objName == 'AT-AP') {
                 index.position.z = -11;
                 index.position.x = 0.5;
@@ -616,12 +566,8 @@ function repositionObj(reposition) {
                     drawData(index, wclass, canvasID);
                     console.log('here');
                 });
-                
-                
-                
             };
-        }
-        
+        };
     });
 }
 
